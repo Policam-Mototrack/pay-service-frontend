@@ -1,5 +1,9 @@
+const apiVersion = 'v1';
+const apiBaseUrl = 'http://localhost:8000/api';
+
 export const environment = {
     production: false,
-    apiUrl: 'http://localhost:8000',
-
+    apiVersion,
+    apiBaseUrl,
+    apiUrl: `${apiBaseUrl}/${apiVersion}/`
 };
