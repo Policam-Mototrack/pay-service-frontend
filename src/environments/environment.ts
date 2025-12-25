@@ -5,5 +5,5 @@ export const environment = {
     production: false,
     apiVersion,
     apiBaseUrl,
-    apiUrl: `${apiBaseUrl}/${apiVersion}/`
+    apiUrl: `${apiBaseUrl}/${apiVersion}`
 };
