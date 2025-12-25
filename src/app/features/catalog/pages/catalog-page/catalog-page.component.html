@@ -1,0 +1,12 @@
+<app-page-container>
+  <h1>Каталог лицензий МотоТрек</h1>
+  <h2>На этой странице представлен каталог товаров и лицензий.</h2>
+
+  <div class="catalog-grid" *ngIf="catalogStore.products.length > 0">
+    <app-product-card *ngFor="let product of catalogStore.products" [product]="product"> </app-product-card>
+  </div>
+
+  <div *ngIf="catalogStore.products.length === 0" class="empty-state">
+    <p>Товары не найдены</p>
+  </div>
+</app-page-container>
