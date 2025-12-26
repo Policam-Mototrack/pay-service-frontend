@@ -1,0 +1,19 @@
+<div class="date-picker">
+  <label [for]="fieldId() || label()" class="date-picker__label">
+    {{ label() }}
+    @if (required()) {
+      <span class="date-picker__required">*</span>
+    }
+  </label>
+
+  <input
+    [id]="fieldId() || label()"
+    [formControl]="control()"
+    type="date"
+    [placeholder]="placeholder()"
+    [min]="min()"
+    [max]="max()"
+    class="date-picker__input"
+  />
+</div>
+

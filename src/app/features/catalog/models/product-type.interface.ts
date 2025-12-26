@@ -1,9 +1,9 @@
-export interface IProductTypeField{
-    title: string;
-    type: string;
+export interface IProductTypeField {
+  title: string
+  type: 'string' | 'number' | 'boolean' | 'date'
 }
-export interface IProductType{
-    id: number;
-    name: string;
-    fileds: IProductTypeField[];
+export interface IProductType {
+  id: number
+  name: string
+  fields: IProductTypeField[]
 }

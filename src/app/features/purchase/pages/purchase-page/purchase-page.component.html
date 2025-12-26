@@ -1,53 +1,64 @@
 <app-page-container>
   <div class="purchase-page">
-    <app-back-button text="← Вернуться к товару"></app-back-button>
+    <app-back-button [link]="'/catalog/' + product()?.id" text="← Вернуться к товару"></app-back-button>
 
+    @if (product()) {
     <div class="purchase-page__card">
-      <h1 class="purchase-page__title">Purchase License</h1>
+      <h1 class="purchase-page__title">{{ product()?.name }}</h1>
 
       <form [formGroup]="purchaseForm" (ngSubmit)="onSubmit()" class="purchase-page__form">
-        <!-- Email Address -->
+        @for (field of purchaseFields(); track field.name) { @switch (field.type) { @case ('string') {
         <app-form-field
-          [control]="emailControl"
-          label="Email Address"
+          [control]="field.control"
+          [label]="field.title"
           [required]="true"
-          type="email"
-          placeholder="your.email@example.com"
-          hint="License details will be sent to this email"
-          fieldId="email"
+          [type]="field.type"
+          [placeholder]="field.title"
+          [fieldId]="field.name"
         ></app-form-field>
-
-        <!-- License Type -->
+        } @case ('number') {
         <app-form-field
-          [control]="licenseTypeControl"
-          label="License Type"
+          [control]="field.control"
+          [label]="field.title"
           [required]="true"
-          fieldType="select"
-          [options]="licenseTypeOptions"
-          fieldId="licenseType"
+          [type]="field.type"
+          [placeholder]="field.title"
+          [fieldId]="field.name"
         ></app-form-field>
-
-        <!-- Payment Method -->
-        <app-radio-group
-          [control]="paymentMethodControl"
-          label="Payment Method"
+        } @case ('boolean') {
+          <app-radio-group [control]="field.control" [label]="field.title" [required]="true" [options]="[
+            { value: 'true', label: 'Да' },
+            { value: 'false', label: 'Нет' }
+          ]" [name]="field.name"></app-radio-group>
+        } 
+        @case ('date') {
+          <app-date-picker [control]="field.control" [label]="field.title" [required]="true" [placeholder]="field.title" [fieldId]="field.name"></app-date-picker>
+        }
+        @default {
+        <app-form-field
+          [control]="field.control"
+          [label]="field.title"
           [required]="true"
-          [options]="paymentMethodOptions"
-          name="paymentMethod"
-        ></app-radio-group>
+          [type]="field.type"
+          [placeholder]="field.title"
+          [fieldId]="field.name"
+        ></app-form-field>
+        } } }
 
-        <!-- Total -->
         <div class="purchase-page__total">
-          <span class="purchase-page__total-label">Total</span>
-          <span class="purchase-page__total-amount">$99</span>
+          <span class="purchase-page__total-label">Итого</span>
+          <span class="purchase-page__total-amount">{{ product()?.price }} ₽</span>
         </div>
 
-        <!-- Submit Button -->
-        <button type="submit" class="purchase-page__submit">Complete Purchase</button>
+        <button type="submit" class="purchase-page__submit">Оформить покупку</button>
 
-        <!-- Terms -->
-        <p class="purchase-page__terms">By completing this purchase, you agree to our terms and conditions</p>
+        <p class="purchase-page__terms">Оформляя покупку, вы соглашаетесь с нашими условиями и правилами</p>
       </form>
     </div>
+    } @else {
+    <div class="purchase-page__loading">
+      <p>Загрузка...</p>
+    </div>
+    }
   </div>
 </app-page-container>
