@@ -1,6 +1,6 @@
 import { Injectable, signal } from "@angular/core";
-import { IProduct } from "../../../core/api/products/models/prodcuts.api.interface";
-import { IProductType } from "../../../core/api/product-types/models/product-types.api.interface";
+import { IProduct } from "../models/product-interface";
+import { IProductType } from "../models/product-type.interface";
 @Injectable({
     providedIn: 'root'
 })

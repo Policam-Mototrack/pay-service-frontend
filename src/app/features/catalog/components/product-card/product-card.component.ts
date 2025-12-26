@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { IProduct } from '../../../../core/api/products/models/prodcuts.api.interface';
+import { IProduct } from '../../models/product-interface';
 
 @Component({
   selector: 'app-product-card',
