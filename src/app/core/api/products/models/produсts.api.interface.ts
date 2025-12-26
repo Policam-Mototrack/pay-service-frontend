@@ -19,7 +19,7 @@ export const DTOProduct = (productDTO: productDTO): IProduct => {
   return {
     id: productDTO.id,
     name: productDTO.name,
-    price: productDTO.price,
+    price: productDTO.price/100,
     description: productDTO.description,
     productType: DTOProductType(productDTO.product_type),
   }

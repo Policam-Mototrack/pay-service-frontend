@@ -1,0 +1,144 @@
+.payment-status-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 64px);
+  padding: 24px;
+  background: #f5f5f5;
+
+  &__warning {
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+    margin-top: 16px;
+  }
+
+  &__modal {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 48px 40px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  &__icon {
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 16px 0;
+    line-height: 1.2;
+  }
+
+  &__description {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #1a1a1a;
+    margin: 0 0 32px 0;
+    max-width: 420px;
+  }
+
+  &__email {
+    font-weight: 600;
+    color: #3b82f6;
+  }
+
+  &__status-box {
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 16px 20px;
+    width: 100%;
+    margin-bottom: 32px;
+    text-align: left;
+  }
+
+  &__status-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  &__status-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #3b82f6;
+    display: inline-block;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  &__status-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: #1a1a1a;
+  }
+
+  &__button {
+    width: 100%;
+    background: #1a1a1a;
+    color: #ffffff;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-family: inherit;
+
+    &:hover {
+      background: #333333;
+    }
+
+    &:active {
+      background: #000000;
+    }
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 16px;
+
+    &__modal {
+      padding: 32px 24px;
+    }
+
+    &__title {
+      font-size: 24px;
+    }
+
+    &__description {
+      font-size: 14px;
+    }
+  }
+}
+

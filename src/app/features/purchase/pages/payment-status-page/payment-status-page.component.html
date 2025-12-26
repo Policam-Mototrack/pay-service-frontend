@@ -1,0 +1,38 @@
+<app-page-container>
+  <div class="payment-status-page">
+    <div class="payment-status-page__modal">
+      <div class="payment-status-page__icon">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="24" r="24" fill="#3b82f6" />
+          <path
+            d="M24 14V24L30 30"
+            stroke="white"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </div>
+
+      <h1 class="payment-status-page__title">Ожидание оплаты</h1>
+
+      <p class="payment-status-page__description">
+        Ваш заказ обрабатывается. Вы получите ваш товар на email
+        <span class="payment-status-page__email">{{ email() || 'arsipooshka@gmail.com' }}</span>
+        после оплаты.
+      </p>
+
+      <div class="payment-status-page__status-box">
+        <div class="payment-status-page__status-label">Статус оплаты</div>
+        <div class="payment-status-page__status-content">
+          <span class="payment-status-page__status-dot"></span>
+          <span class="payment-status-page__status-text">{{ status() }}</span>
+        </div>
+      </div>
+
+      <button class="payment-status-page__button" (click)="returnToHome()">Вернуться на главную</button>
+      <span class="payment-status-page__warning">Не закрывайте эту страницу пока платеж не будет завершен</span>
+    </div>
+  </div>
+</app-page-container>
+
