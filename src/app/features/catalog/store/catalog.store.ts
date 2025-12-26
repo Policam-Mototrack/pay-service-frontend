@@ -1,7 +1,9 @@
 import { Injectable, signal } from "@angular/core";
 import { IProduct } from "../../../core/api/products/models/prodcuts.api.interface";
 import { IProductType } from "../../../core/api/product-types/models/product-types.api.interface";
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class CatalogStore {
     private _products = signal<IProduct[]>([]);
     private _productTypes = signal<IProductType[]>([]);
