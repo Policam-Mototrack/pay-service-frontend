@@ -7,11 +7,13 @@ import { RadioGroupComponent, RadioOption } from '../../../../shared/components/
 import { DatePickerComponent } from '../../../../shared/components/ui/date-picker/date-picker.component'
 import { CommonModule } from '@angular/common'
 import { ProductService } from '../../../catalog/services/product.service'
-import { IProduct } from '../../../catalog/models/product-interface'
+import { IProduct } from '../../../../core/models/product-interface'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ActivatedRoute } from '@angular/router'
 import { PurchaseFactory } from './purchase.factory'
 import { IGeneratedField } from '../../models/generated-field'
+import { LocalizeFieldErrorPipe } from '../../../../shared/pipes/localize-field-error.pipe'
+import { ToastService } from '../../../../core/services/toast.service'
 
 @Component({
   selector: 'app-purchase-page',
@@ -24,6 +26,7 @@ import { IGeneratedField } from '../../models/generated-field'
     ReactiveFormsModule,
     RadioGroupComponent,
     DatePickerComponent,
+    LocalizeFieldErrorPipe,
   ],
   templateUrl: './purchase-page.component.html',
   styleUrl: './purchase-page.component.scss',
@@ -36,10 +39,16 @@ export class PurchasePageComponent {
   private productId?: number
   public purchaseFields = signal<IGeneratedField[]>([])
   purchaseForm = new FormGroup({})
+  private toastService = inject(ToastService)
   fb = inject(FormBuilder)
   product = signal<IProduct | undefined>(undefined)
 
   onSubmit(): void {
+    this.purchaseForm.markAllAsTouched()
+    if (!this.purchaseForm.valid) {
+      this.toastService.error('Заполните все обязательные поля')
+      return
+    }
     if (this.purchaseForm.valid) {
       console.log('Form submitted:', this.purchaseForm.value)
     }

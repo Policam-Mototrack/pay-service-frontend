@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, signal } from '@angular/core'
 import { map, Observable } from 'rxjs'
-import { IProduct } from '../../models/product-interface'
+import { IProduct } from '../../../../core/models/product-interface'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { PageContainerComponent } from '../../../../shared/components/layouts/page-container/page-container.component'
 import { BackButtonComponent } from '../../../../shared/components/ui/back-button/back-button.component'

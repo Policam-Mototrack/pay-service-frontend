@@ -13,6 +13,8 @@
           [label]="field.title"
           [required]="true"
           [type]="field.type"
+          [hasError]="!field.control.valid && field.control.touched"
+          [errorMessage]="field.control | localizeFieldError"
           [placeholder]="field.title"
           [fieldId]="field.name"
         ></app-form-field>
@@ -22,20 +24,35 @@
           [label]="field.title"
           [required]="true"
           [type]="field.type"
+          [hasError]="!field.control.valid && field.control.touched"
+          [errorMessage]="field.control | localizeFieldError"
           [placeholder]="field.title"
           [fieldId]="field.name"
         ></app-form-field>
         } @case ('boolean') {
-          <app-radio-group [control]="field.control" [label]="field.title" [required]="true" [options]="[
+        <app-radio-group
+          [control]="field.control"
+          [label]="field.title"
+          [hasError]="!field.control.valid && field.control.touched"
+          [required]="true"
+          [options]="[
             { value: 'true', label: 'Да' },
             { value: 'false', label: 'Нет' }
-          ]" [name]="field.name"></app-radio-group>
-        } 
-        @case ('date') {
-          <app-date-picker [control]="field.control" [label]="field.title" [required]="true" [placeholder]="field.title" [fieldId]="field.name"></app-date-picker>
-        }
-        @default {
+          ]"
+          [name]="field.name"
+        ></app-radio-group>
+        } @case ('date') {
+        <app-date-picker
+          [hasError]="!field.control.valid && field.control.touched"
+          [control]="field.control"
+          [label]="field.title"
+          [required]="true"
+          [placeholder]="field.title"
+          [fieldId]="field.name"
+        ></app-date-picker>
+        } @default {
         <app-form-field
+          [hasError]="!field.control.valid && field.control.touched"
           [control]="field.control"
           [label]="field.title"
           [required]="true"

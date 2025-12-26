@@ -5,10 +5,12 @@ import { forkJoin } from 'rxjs'
 import { LoaderComponent } from './shared/components/loader/loader.component'
 import { LoaderService } from './core/services/loader.service'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { ToastContainerComponent } from './shared/components/ui/toast/toast-container.component'
+import { ToastService } from './core/services/toast.service'
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, LoaderComponent],
+  imports: [RouterOutlet, LoaderComponent, ToastContainerComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
@@ -18,10 +20,13 @@ export class AppComponent implements OnInit {
   private anonymousAuthService = inject(AnonymousAuthService)
   private destroyRef = inject(DestroyRef)
   public loader = inject(LoaderService)
+  private toastService = inject(ToastService)
   initAnonymousAuth() {
     return this.anonymousAuthService.initAnonymousAuth()
   }
   ngOnInit(): void {
-    forkJoin([this.initAnonymousAuth()]).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(([response]) => {})
+    forkJoin([this.initAnonymousAuth()])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(([response]) => {})
   }
 }

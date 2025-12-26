@@ -1,4 +1,4 @@
-import { IProductType } from '../../../../features/catalog/models/product-type.interface'
+import { IProductType } from '../../../models/product-type.interface'
 import { BaseServerResponse } from '../../shared/models/responses/base-server-response.interface'
 
 export interface productTypeDTO {
@@ -6,7 +6,7 @@ export interface productTypeDTO {
   name: string
   fields: {
     title: string
-    type: 'string' | 'number' | 'boolean' | 'date' 
+    type: 'string' | 'number' | 'boolean' | 'date'
   }[]
 }
 

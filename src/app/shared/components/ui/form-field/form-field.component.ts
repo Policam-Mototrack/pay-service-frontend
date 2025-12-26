@@ -37,4 +37,10 @@ export class FormFieldComponent {
 
   // ID для связи label и input
   fieldId = input<string>('')
+
+  // Наличие ошибки (передается извне)
+  hasError = input<boolean>(false)
+
+  // Текст ошибки (передается извне)
+  errorMessage = input<string>('')
 }

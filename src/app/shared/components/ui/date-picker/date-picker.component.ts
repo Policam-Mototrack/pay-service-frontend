@@ -31,5 +31,11 @@ export class DatePickerComponent {
   
   // Максимальная дата
   max = input<string>('')
+
+  // Наличие ошибки (передается извне)
+  hasError = input<boolean>(false)
+
+  // Текст ошибки (передается извне)
+  errorMessage = input<string>('')
 }
 

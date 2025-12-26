@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common'
 import { RouterLink } from '@angular/router'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { DestroyRef } from '@angular/core'
-import { IProduct } from '../../models/product-interface'
+import { IProduct } from '../../../../core/models/product-interface'
 @Component({
   selector: 'app-catalog-page',
   standalone: true,
@@ -26,16 +26,22 @@ export class CatalogPageComponent implements OnInit {
   private destroyRef = inject(DestroyRef)
   getProducts() {
     if (this.catalogStore.products.length > 0) return
-    this.productsApiService.getProducts().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((response: IProduct[]) => {
-      this.catalogStore.setProducts(response)
-    })
+    this.productsApiService
+      .getProducts()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((response: IProduct[]) => {
+        this.catalogStore.setProducts(response)
+      })
   }
 
   getProductTypes() {
     if (this.catalogStore.productTypes.length > 0) return
-    this.productTypesApiService.getProductTypes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((response: IProductTypeApiInterface) => {
-      this.catalogStore.setProductTypes(response.data ?? [])
-    })
+    this.productTypesApiService
+      .getProductTypes()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((response: IProductTypeApiInterface) => {
+        this.catalogStore.setProductTypes(response.data ?? [])
+      })
   }
 
   ngOnInit() {

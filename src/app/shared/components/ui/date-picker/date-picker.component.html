@@ -13,7 +13,12 @@
     [placeholder]="placeholder()"
     [min]="min()"
     [max]="max()"
+    [class.date-picker__input--error]="hasError()"
     class="date-picker__input"
   />
+
+  @if (hasError() && errorMessage()) {
+    <p class="date-picker__error">{{ errorMessage() }}</p>
+  }
 </div>
 

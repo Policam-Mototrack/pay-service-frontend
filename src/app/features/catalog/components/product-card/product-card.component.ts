@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { IProduct } from '../../models/product-interface';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { IProduct } from '../../../../core/models/product-interface'
 
 @Component({
   selector: 'app-product-card',
@@ -7,8 +7,8 @@ import { IProduct } from '../../models/product-interface';
   imports: [],
   templateUrl: './product-card.component.html',
   styleUrl: './product-card.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductCardComponent {
-  @Input() product!: IProduct;
+  @Input() product!: IProduct
 }
