@@ -1,0 +1,53 @@
+<app-page-container>
+  <div class="purchase-page">
+    <app-back-button text="← Вернуться к товару"></app-back-button>
+
+    <div class="purchase-page__card">
+      <h1 class="purchase-page__title">Purchase License</h1>
+
+      <form [formGroup]="purchaseForm" (ngSubmit)="onSubmit()" class="purchase-page__form">
+        <!-- Email Address -->
+        <app-form-field
+          [control]="emailControl"
+          label="Email Address"
+          [required]="true"
+          type="email"
+          placeholder="your.email@example.com"
+          hint="License details will be sent to this email"
+          fieldId="email"
+        ></app-form-field>
+
+        <!-- License Type -->
+        <app-form-field
+          [control]="licenseTypeControl"
+          label="License Type"
+          [required]="true"
+          fieldType="select"
+          [options]="licenseTypeOptions"
+          fieldId="licenseType"
+        ></app-form-field>
+
+        <!-- Payment Method -->
+        <app-radio-group
+          [control]="paymentMethodControl"
+          label="Payment Method"
+          [required]="true"
+          [options]="paymentMethodOptions"
+          name="paymentMethod"
+        ></app-radio-group>
+
+        <!-- Total -->
+        <div class="purchase-page__total">
+          <span class="purchase-page__total-label">Total</span>
+          <span class="purchase-page__total-amount">$99</span>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="purchase-page__submit">Complete Purchase</button>
+
+        <!-- Terms -->
+        <p class="purchase-page__terms">By completing this purchase, you agree to our terms and conditions</p>
+      </form>
+    </div>
+  </div>
+</app-page-container>

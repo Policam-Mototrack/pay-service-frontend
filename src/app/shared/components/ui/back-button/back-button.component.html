@@ -1,0 +1,9 @@
+@if (link(); as linkValue) {
+<a [routerLink]="linkValue" class="back-button">
+  {{ text() }}
+</a>
+} @else {
+<a href="#" class="back-button" (click)="handleClick($event)">
+  {{ text() }}
+</a>
+}

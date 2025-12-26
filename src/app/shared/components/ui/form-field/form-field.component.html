@@ -1,0 +1,22 @@
+<div class="form-field">
+  <label [for]="fieldId() || label()" class="form-field__label">
+    {{ label() }}
+    @if (required()) {
+    <span class="form-field__required">*</span>
+    }
+  </label>
+
+  @if (fieldType() === 'input') {
+  <input [id]="fieldId() || label()" [formControl]="control()" [type]="type()" [placeholder]="placeholder()" class="form-field__input" />
+  } @else if (fieldType() === 'select') {
+  <select [id]="fieldId() || label()" [formControl]="control()" class="form-field__select">
+    @for (option of options(); track option.value) {
+    <option [value]="option.value">{{ option.label }}</option>
+    }
+  </select>
+  } @else if (fieldType() === 'textarea') {
+  <textarea [id]="fieldId() || label()" [formControl]="control()" [placeholder]="placeholder()" class="form-field__textarea" rows="4"></textarea>
+  } @if (hint()) {
+  <p class="form-field__hint">{{ hint() }}</p>
+  }
+</div>

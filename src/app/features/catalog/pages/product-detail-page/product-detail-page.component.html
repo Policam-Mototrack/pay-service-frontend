@@ -1,39 +1,35 @@
 <app-page-container>
-    @if (product(); as productData) {
-      <div class="product-detail">
-        <a routerLink="/catalog" class="product-detail__back">
-          ← Назад в каталог
-        </a>
-  
-        <div class="product-detail__card">
-          <div class="product-detail__image">
-            <img src="/assets/icons/licensed.svg" [alt]="productData.name" />
+  @if (product(); as productData) {
+  <div class="product-detail">
+    <app-back-button link="/catalog" text="← Назад в каталог"></app-back-button>
+
+    <div class="product-detail__card">
+      <div class="product-detail__image">
+        <img src="/assets/icons/licensed.svg" [alt]="productData.name" />
+      </div>
+
+      <div class="product-detail__content">
+        <h1 class="product-detail__title">{{ productData.name }}</h1>
+
+        <div class="product-detail__divider"></div>
+
+        <div class="product-detail__section">
+          <h2 class="product-detail__section-title">Описание</h2>
+          <p class="product-detail__description-text">{{ productData.description ?? 'Описание отсутствует' }}</p>
+        </div>
+
+        <div class="product-detail__footer">
+          <div class="product-detail__price-info">
+            <span class="product-detail__price">{{ productData.price }} ₽</span>
           </div>
-  
-          <div class="product-detail__content">
-            <h1 class="product-detail__title">{{ productData.name }}</h1>
-  
-            <div class="product-detail__divider"></div>
-  
-            <div class="product-detail__section">
-              <h2 class="product-detail__section-title">Описание</h2>
-              <p class="product-detail__description-text">{{ productData.description ?? 'Описание отсутствует' }}</p>
-            </div>
-  
-            <div class="product-detail__footer">
-              <div class="product-detail__price-info">
-                <span class="product-detail__price">{{ productData.price }} ₽</span>
-              </div>
-              <button class="product-detail__button">
-                Купить
-              </button>
-            </div>
-          </div>
+          <button [routerLink]="['/purchase', productData.id]" class="product-detail__button">Купить</button>
         </div>
       </div>
-    } @else {
-      <div class="product-detail__loading">
-        <p>Загрузка...</p>
-      </div>
-    }
-  </app-page-container>
+    </div>
+  </div>
+  } @else {
+  <div class="product-detail__loading">
+    <p>Загрузка...</p>
+  </div>
+  }
+</app-page-container>
