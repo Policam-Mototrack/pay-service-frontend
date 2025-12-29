@@ -19,9 +19,14 @@ export class BackButtonComponent {
   text = input<string>('← Назад')
 
   handleClick(event: Event): void {
-    if (!this.link() || !this.customBack()) {
-      if (window.history.length > 1) this.location.back();
-      else this.router.navigateByUrl('/catalog'); // fallback
-    }
+    if(!this.customBack()){
+      if(this.link() && this.link() !== null){
+        this.router.navigateByUrl(this.link() as string)
+      }
+      if (!this.link()) {
+        if (window.history.length > 1) this.location.back();
+        else this.router.navigateByUrl('/catalog'); // fallback
+      }
+  }
   }
 }

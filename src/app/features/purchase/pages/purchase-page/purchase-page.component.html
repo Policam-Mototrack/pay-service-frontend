@@ -6,6 +6,9 @@
     <div class="purchase-page__card">
       <h1 class="purchase-page__title">{{ product()?.name }}</h1>
       @if (_purchaseState() === 'initial') {
+        <div class="purchase-page__contacts-section">
+          <p class="purchase-page__contacts-title">Заполните необходимую информацию для оформления покупки</p>
+        </div>
       <form [formGroup]="purchaseForm" (ngSubmit)="submitForm()" class="purchase-page__form">
         @for (field of purchaseFields(); track field.name) { @switch (field.type) { @case ('string') {
         <app-form-field

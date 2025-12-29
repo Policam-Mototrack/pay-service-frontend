@@ -65,7 +65,8 @@ export class PurchasePageComponent {
     if (this._purchaseState() === 'contacts') {
       this._purchaseState.set('initial')
     } else {
-      this.router.navigate(['/catalog', this.productId])
+      console.log(this._purchaseState())
+      // this.router.navigate(['/catalog', this.productId])
     }
   }
   submitForm(): void {
