@@ -8,7 +8,7 @@ import { ToastService } from '../../../../core/services/toast.service'
 })
 export class AnonymousAuthService {
   private authToken = signal<string | null>(this.getAuthTokenFromLocalStorage())
-  private uuid = signal<string | null>(this.getUuidFromLocalStorage())
+  public uuid = signal<string | null>(this.getUuidFromLocalStorage())
   private anonymousAuthApiService = inject(AnonymousAuthApiService)
   private toastService = inject(ToastService)
   private getAuthTokenFromLocalStorage(): string | null {

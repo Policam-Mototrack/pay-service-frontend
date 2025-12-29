@@ -1,6 +1,6 @@
 import { BaseServerResponse } from '../../shared/models/responses/base-server-response.interface'
 import { DTOProductType, productTypeDTO } from '../../product-types/models/product-types.api.interface'
-import { IProduct } from '../../../models/product-interface'
+import { IProduct } from '../../../models/product.interface'
 export interface productDTO {
   id: number
   name: string
@@ -19,7 +19,7 @@ export const DTOProduct = (productDTO: productDTO): IProduct => {
   return {
     id: productDTO.id,
     name: productDTO.name,
-    price: productDTO.price/100,
+    price: productDTO.price / 100,
     description: productDTO.description,
     productType: DTOProductType(productDTO.product_type),
   }

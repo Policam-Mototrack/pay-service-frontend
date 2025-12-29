@@ -7,13 +7,20 @@ import { RadioGroupComponent, RadioOption } from '../../../../shared/components/
 import { DatePickerComponent } from '../../../../shared/components/ui/date-picker/date-picker.component'
 import { CommonModule } from '@angular/common'
 import { ProductService } from '../../../catalog/services/product.service'
-import { IProduct } from '../../../../core/models/product-interface'
+import { IProduct } from '../../../../core/models/product.interface'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ActivatedRoute } from '@angular/router'
 import { PurchaseFactory } from './purchase.factory'
 import { IGeneratedField } from '../../models/generated-field'
 import { LocalizeFieldErrorPipe } from '../../../../shared/pipes/localize-field-error.pipe'
 import { ToastService } from '../../../../core/services/toast.service'
+import { IPurchase } from '../../../../core/models/purchase.interface'
+import { PurchasesApiService } from '../../../../core/api/purchases/purchases-api.service'
+import { ICreatePurchase } from '../../../../core/api/purchases/models/purchase.api.interface'
+import { catchError, EMPTY, of } from 'rxjs'
+import { HttpErrorResponse } from '@angular/common/http'
+import { getErrorMessage } from '../../../../shared/utils/error-message.util'
+import { AnonymousAuthService } from '../../../auth/anonymous-auth/services/anonymous-auth.service'
 
 @Component({
   selector: 'app-purchase-page',
@@ -36,7 +43,9 @@ export class PurchasePageComponent {
   private productService = inject(ProductService)
   private destroyRef = inject(DestroyRef)
   private route = inject(ActivatedRoute)
+  private purchasesApiService = inject(PurchasesApiService)
   private productId?: number
+  private anonymousAuthService = inject(AnonymousAuthService)
   public purchaseFields = signal<IGeneratedField[]>([])
   purchaseForm = new FormGroup({})
   private toastService = inject(ToastService)
@@ -50,7 +59,35 @@ export class PurchasePageComponent {
       return
     }
     if (this.purchaseForm.valid) {
-      console.log('Form submitted:', this.purchaseForm.value)
+      const visitorUuid = this.anonymousAuthService.uuid()
+      if (!visitorUuid) {
+        this.toastService.error('Вы не авторизованы')
+        
+        window.location.reload()
+
+        return
+      }
+      const createPurchase: ICreatePurchase = {
+        visitor_uuid: visitorUuid!,
+        products: [
+          {
+            product_id: this.productId!,
+            fields: this.purchaseForm.value,
+          },
+        ],
+      }
+      this.purchasesApiService
+        .createPurchase(createPurchase)
+        .pipe(
+          takeUntilDestroyed(this.destroyRef),
+          catchError((error: HttpErrorResponse) => {
+            this.toastService.error(getErrorMessage(error))
+            return EMPTY
+          }),
+        )
+        .subscribe((purchase: IPurchase) => {
+          console.log('Purchase created:', purchase)
+        })
     }
   }
   createPurchaseForm() {

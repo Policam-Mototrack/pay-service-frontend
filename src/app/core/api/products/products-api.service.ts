@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core'
 import { DTOProduct, IProductApiInterface, IProductApiInterfaceById, IProductFilter } from './models/produсts.api.interface'
 import { map, Observable } from 'rxjs'
 import { environment } from '../../../../environments/environment'
-import { IProduct } from '../../models/product-interface'
+import { IProduct } from '../../models/product.interface'
 
 @Injectable({
   providedIn: 'root',

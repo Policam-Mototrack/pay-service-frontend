@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
-import { IProduct } from '../../../../core/models/product-interface'
+import { IProduct } from '../../../../core/models/product.interface'
 
 @Component({
   selector: 'app-product-card',

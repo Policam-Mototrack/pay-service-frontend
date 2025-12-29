@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common'
 import { RouterLink } from '@angular/router'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { DestroyRef } from '@angular/core'
-import { IProduct } from '../../../../core/models/product-interface'
+import { IProduct } from '../../../../core/models/product.interface'
 @Component({
   selector: 'app-catalog-page',
   standalone: true,

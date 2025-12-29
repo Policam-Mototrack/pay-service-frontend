@@ -1,4 +1,4 @@
-import { IProduct } from '../../../../core/models/product-interface'
+import { IProduct } from '../../../../core/models/product.interface'
 import { FormBuilder, FormControl, Validators } from '@angular/forms'
 import { IGeneratedField } from '../../models/generated-field'
 
