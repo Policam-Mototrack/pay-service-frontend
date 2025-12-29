@@ -1,6 +1,7 @@
 import { DTOProduct, productDTO } from "../../products/models/produсts.api.interface";
 import { BaseServerResponse } from "../../shared/models/responses/base-server-response.interface";
 import { IPurchase } from "../../../models/purchase.interface";
+import { PaymentStatus } from "../../../../features/purchase/components/payment-status-modal/payment-status-modal.component";
 export interface purchaseDTO{
     uuid: string,
     visitor_uuid: string,
@@ -8,6 +9,7 @@ export interface purchaseDTO{
     products:productDTO[],
     created_at: string,
     updated_at: string,
+    payment_status: PaymentStatus,
 }
 
 export interface IPurchaseApiInterface extends BaseServerResponse<purchaseDTO[]> {
@@ -35,5 +37,6 @@ export const DTOPurchase = (purchaseDTO: purchaseDTO): IPurchase => {
         products: purchaseDTO.products.map(DTOProduct),
         createdAt: purchaseDTO.created_at,
         updatedAt: purchaseDTO.updated_at,
+        paymentStatus: purchaseDTO.payment_status,
     }
 }

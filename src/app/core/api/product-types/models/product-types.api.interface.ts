@@ -19,8 +19,8 @@ export interface IProductTypeApiInterfaceById extends BaseServerResponse<product
 
 export const DTOProductType = (productTypeDTO: productTypeDTO): IProductType => {
   return {
-    id: productTypeDTO.id,
-    name: productTypeDTO.name,
-    fields: productTypeDTO.fields,
+    id: productTypeDTO?.id,
+    name: productTypeDTO?.name,
+    fields: productTypeDTO?.fields,
   }
 }

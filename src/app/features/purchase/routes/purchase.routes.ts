@@ -11,5 +11,9 @@ export const purchaseRoutes: Routes = [
         path: ':productId',
         component: PurchasePageComponent,
     },
+    {
+        path: 'payment-status/:purchaseUuid',
+        component: PaymentStatusPageComponent,
+    }
  
 ]

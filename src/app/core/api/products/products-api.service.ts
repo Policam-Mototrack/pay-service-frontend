@@ -24,4 +24,5 @@ export class ProductsApiService {
       .get<IProductApiInterfaceById>(`${environment.apiUrl}/licenses/products/${id}`)
       .pipe(map((response: IProductApiInterfaceById) => DTOProduct(response.data ?? null)))
   }
+ 
 }

@@ -1,0 +1,68 @@
+<div class="payment-status-modal">
+  <div class="payment-status-modal__icon">
+    @switch (status()) { @case ('pending') {
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="24" fill="#3b82f6" />
+      <path d="M24 14V24L30 30" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    } @case ('confirmed') {
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="24" fill="#10b981" />
+      <path d="M16 24L22 30L32 18" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    } @case ('failed') {
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="24" fill="#ef4444" />
+      <path d="M18 18L30 30M30 18L18 30" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    } @case ('cancelled') {
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="24" fill="#f59e0b" />
+      <path d="M18 18L30 30M30 18L18 30" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    } @case ('authorized') {
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="24" fill="#3b82f6" />
+      <rect x="16" y="20" width="16" height="12" rx="2" stroke="white" stroke-width="2.5" fill="none" />
+      <path d="M20 20V16C20 13.7909 21.7909 12 24 12C26.2091 12 28 13.7909 28 16V20" stroke="white" stroke-width="2.5" stroke-linecap="round" />
+    </svg>
+    } }
+  </div>
+
+  <h1 class="payment-status-modal__title">
+    @if (status() === 'pending' || status() === 'authorized') {
+    {{ getStatusConfig().title }}
+    <span class="payment-status-modal__loading-dots">
+      <span class="payment-status-modal__dot">.</span>
+      <span class="payment-status-modal__dot">.</span>
+      <span class="payment-status-modal__dot">.</span>
+    </span>
+    } @else {
+    {{ getStatusConfig().title }}
+    }
+  </h1>
+
+  <p class="payment-status-modal__description">
+    {{ getStatusConfig().description }}
+  </p>
+
+  @if (status() === 'pending' || status() === 'authorized') {
+  <div class="payment-status-modal__status-box">
+    <div class="payment-status-modal__status-label">Статус оплаты</div>
+    <div class="payment-status-modal__status-content">
+      <span class="payment-status-modal__status-dot"></span>
+      <span class="payment-status-modal__status-text">{{
+        statusText() || (status() === 'authorized' ? 'Ожидание подтверждения...' : 'Ожидание оплаты...')
+      }}</span>
+    </div>
+  </div>
+  }
+
+  <button class="payment-status-modal__button" (click)="handleReturnHome()">
+    {{ getStatusConfig().buttonText }}
+  </button>
+
+  @if (getStatusConfig().showWarning) {
+  <span class="payment-status-modal__warning">Не закрывайте эту страницу пока платеж не будет завершен</span>
+  }
+</div>

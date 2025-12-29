@@ -15,10 +15,11 @@ export class BackButtonComponent {
   router = inject(Router)
   location = inject(Location)
   link = input<string | null>(null)
+  customBack = input<boolean>(false)
   text = input<string>('← Назад')
 
   handleClick(event: Event): void {
-    if (!this.link()) {
+    if (!this.link() || !this.customBack()) {
       if (window.history.length > 1) this.location.back();
       else this.router.navigateByUrl('/catalog'); // fallback
     }

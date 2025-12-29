@@ -17,11 +17,11 @@ export interface IProductApiInterfaceById extends BaseServerResponse<productDTO>
 }
 export const DTOProduct = (productDTO: productDTO): IProduct => {
   return {
-    id: productDTO.id,
-    name: productDTO.name,
-    price: productDTO.price / 100,
-    description: productDTO.description,
-    productType: DTOProductType(productDTO.product_type),
+    id: productDTO?.id,
+    name: productDTO?.name,
+    price: productDTO?.price / 100,
+    description: productDTO?.description,
+    productType: DTOProductType(productDTO?.product_type),
   }
 }
 export interface IProductFilter {

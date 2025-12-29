@@ -1,12 +1,12 @@
 <app-page-container>
   <div class="purchase-page">
-    <app-back-button [link]="'/catalog/' + product()?.id" text="← Вернуться к товару"></app-back-button>
+    <app-back-button [customBack]="true" (click)="goBackToProduct()" text="← Вернуться к товару"></app-back-button>
 
     @if (product()) {
     <div class="purchase-page__card">
       <h1 class="purchase-page__title">{{ product()?.name }}</h1>
-
-      <form [formGroup]="purchaseForm" (ngSubmit)="onSubmit()" class="purchase-page__form">
+      @if (_purchaseState() === 'initial') {
+      <form [formGroup]="purchaseForm" (ngSubmit)="submitForm()" class="purchase-page__form">
         @for (field of purchaseFields(); track field.name) { @switch (field.type) { @case ('string') {
         <app-form-field
           [control]="field.control"
@@ -71,6 +71,21 @@
 
         <p class="purchase-page__terms">Оформляя покупку, вы соглашаетесь с нашими условиями и правилами</p>
       </form>
+      } @if (purchaseContactsForm && _purchaseState() === 'contacts') {
+      <div class="purchase-page__contacts-section">
+        <p class="purchase-page__contacts-title">Заполните контактную информацию куда будет отправлен товар</p>
+      </div>
+      <form [formGroup]="purchaseContactsForm" (ngSubmit)="initializePurchaseContactsForm()" class="purchase-page__form">
+        <app-form-field
+          [control]="getCurrentControlInContactsForm('email')"
+          label="Электронная почта"
+          [required]="true"
+          [type]="'email'"
+        ></app-form-field>
+        <app-form-field [control]="getCurrentControlInContactsForm('phone')" label="Телефон" [required]="true" [type]="'tel'"></app-form-field>
+        <button type="submit" class="purchase-page__submit">Оформить покупку</button>
+      </form>
+      }
     </div>
     } @else {
     <div class="purchase-page__loading">

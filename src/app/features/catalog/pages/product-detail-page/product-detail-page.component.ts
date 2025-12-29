@@ -1,11 +1,14 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, signal } from '@angular/core'
-import { map, Observable } from 'rxjs'
+import { EMPTY, catchError, map, Observable } from 'rxjs'
+import { HttpErrorResponse } from '@angular/common/http'
 import { IProduct } from '../../../../core/models/product.interface'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { PageContainerComponent } from '../../../../shared/components/layouts/page-container/page-container.component'
 import { BackButtonComponent } from '../../../../shared/components/ui/back-button/back-button.component'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ProductService } from '../../services/product.service'
+import { getErrorMessage } from '../../../../shared/utils/error-message.util'
+import { ToastService } from '../../../../core/services/toast.service'
 @Component({
   selector: 'app-product-detail-page',
   standalone: true,
@@ -21,13 +24,19 @@ export class ProductDetailPageComponent {
   public product = signal<IProduct | undefined>(undefined)
   private destroyRef = inject(DestroyRef)
   private productService = inject(ProductService)
+  private toastService = inject(ToastService)
 
   ngOnInit() {
     this.productId = this.route.snapshot.params['id']
     if (this.productId) {
       this.productService
         .getProduct(this.productId)
-        .pipe(takeUntilDestroyed(this.destroyRef))
+        .pipe(takeUntilDestroyed(this.destroyRef),catchError((error: HttpErrorResponse) => {
+          this.toastService.error(getErrorMessage(error))
+          this.router.navigate(['/catalog']);
+          return EMPTY
+        }),
+        )
         .subscribe((product: IProduct) => {
           if (product) {
             this.product.set(product)
