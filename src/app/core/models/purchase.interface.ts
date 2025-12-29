@@ -7,6 +7,10 @@ export interface IPurchase {
     finalPrice: number,
     products: IProduct[],
     paymentStatus: PaymentStatus,
+    payerEmail: string,
+    payerPhone: string,
     createdAt: string,
     updatedAt: string,
+    paymentUrl: string,
+    serviceFee: number,
 }

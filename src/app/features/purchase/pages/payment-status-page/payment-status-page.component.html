@@ -1,10 +1,9 @@
 <app-page-container>
   <div class="payment-status-page">
     <app-payment-status-modal
-      [status]="paymentStatus()"
-      [email]="email()"
-      [statusText]="status()"
-      (onReturnHome)="returnToHome()"
+      [status]="paymentStatusService.purchase()?.paymentStatus"
+      [email]="paymentStatusService.purchase()?.payerEmail"
+      (onPurchasePageClick)="navigateToPurchasePage($event)"
     ></app-payment-status-modal>
   </div>
 </app-page-container>

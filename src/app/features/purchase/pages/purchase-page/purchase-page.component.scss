@@ -37,14 +37,96 @@
     gap: 24px;
   }
 
+  &__receipt {
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 24px 0;
+  }
+
+  &__receipt-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__products-list {
+    margin-bottom: 16px;
+  }
+
+  &__product-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 12px 0;
+    border-bottom: 1px solid #e5e5e5;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+
+  &__product-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: #1a1a1a;
+    line-height: 1.4;
+  }
+
+  &__product-quantity {
+    font-size: 13px;
+    color: #666;
+  }
+
+  &__product-price {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a1a;
+    white-space: nowrap;
+    margin-left: 16px;
+  }
+
+  &__receipt-divider {
+    height: 1px;
+    background: #e5e5e5;
+    margin: 12px 0;
+  }
+
+  &__receipt-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+  }
+
+  &__receipt-label {
+    font-size: 14px;
+    color: #666;
+  }
+
+  &__receipt-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+  }
+
   &__total {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 0;
-    border-top: 1px solid #e5e5e5;
-    border-bottom: 1px solid #e5e5e5;
-    margin: 8px 0;
+    padding: 16px 0 0 0;
+    margin-top: 12px;
+    border-top: 2px solid #1a1a1a;
   }
 
   &__total-label {

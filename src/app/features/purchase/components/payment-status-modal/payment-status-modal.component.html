@@ -58,7 +58,7 @@
   </div>
   }
 
-  <button class="payment-status-modal__button" (click)="handleReturnHome()">
+  <button class="payment-status-modal__button" (click)="handleReturnHome(status() || 'pending')">
     {{ getStatusConfig().buttonText }}
   </button>
 

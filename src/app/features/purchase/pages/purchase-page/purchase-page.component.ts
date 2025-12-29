@@ -59,16 +59,17 @@ export class PurchasePageComponent {
   _purchaseState = signal<'initial' | 'contacts'>('initial')
   fb = inject(FormBuilder)
   product = signal<IProduct | undefined>(undefined)
+  serviceFee = signal<number>(0)
   createdPurchaseUuid: string | undefined
   goBackToProduct(): void {
-    if(this._purchaseState() === 'contacts') {
+    if (this._purchaseState() === 'contacts') {
       this._purchaseState.set('initial')
     } else {
       this.router.navigate(['/catalog', this.productId])
     }
   }
   submitForm(): void {
-    if(this._purchaseState() === 'initial') {
+    if (this._purchaseState() === 'initial') {
       this.createPurchase()
     } else {
       this.initializePurchaseContactsForm()
@@ -108,32 +109,45 @@ export class PurchasePageComponent {
         .subscribe((purchase: IPurchase) => {
           this.purchaseContactsForm = PurchaseContactsFactory.createPurchaseContactsForm(purchase.uuid)
           this.createdPurchaseUuid = purchase.uuid
+          this.serviceFee.set(purchase.serviceFee)
           this._purchaseState.set('contacts')
         })
     }
   }
   initializePurchaseContactsForm() {
-    if(this.purchaseContactsForm && this.createdPurchaseUuid) {
-      this.bankApiService.initializePurchase({
-        purchase_uuid: this.createdPurchaseUuid,
-        email: this.purchaseContactsForm.value.email,
-        phone: this.purchaseContactsForm.value.phone,
-      }).pipe(
-        takeUntilDestroyed(this.destroyRef),
-        catchError((error: HttpErrorResponse) => {
-          this.toastService.error(getErrorMessage(error))
-          return EMPTY
-        }),
-      ).subscribe((response: BaseServerResponse<IPaymentLink>) => {
-        this.router.navigate(['/purchase/payment-status', this.createdPurchaseUuid])
-        this.toastService.success('Платеж инициализирован')
-      })
-    }else {
+    if (this.purchaseContactsForm && this.createdPurchaseUuid) {
+      this.bankApiService
+        .initializePurchase({
+          purchase_uuid: this.createdPurchaseUuid,
+          email: this.purchaseContactsForm.value.email,
+          phone: this.purchaseContactsForm.value.phone,
+        })
+        .pipe(
+          takeUntilDestroyed(this.destroyRef),
+          catchError((error: HttpErrorResponse) => {
+            this.toastService.error(getErrorMessage(error))
+            return EMPTY
+          }),
+        )
+        .subscribe((response: BaseServerResponse<IPaymentLink>) => {
+          this.router.navigate(['/purchase/payment-status', this.createdPurchaseUuid])
+          this.toastService.success('Платеж инициализирован')
+        })
+    } else {
       this.toastService.error('Ошибка при создании покупки')
     }
   }
   getCurrentControlInContactsForm(controlName: string) {
     return this.purchaseContactsForm?.get(controlName) as FormControl
+  }
+
+  getServiceFee(): number {
+    return this.serviceFee()
+  }
+
+  getTotalPrice(): number {
+    const productPrice = this.product()?.price || 0
+    return productPrice + this.getServiceFee()
   }
   createPurchaseForm() {
     if (this.product()) {
@@ -152,11 +166,14 @@ export class PurchasePageComponent {
     if (this.productId) {
       this.productService
         .getProduct(this.productId)
-        .pipe(takeUntilDestroyed(this.destroyRef),catchError((error: HttpErrorResponse) => {
-          this.toastService.error(getErrorMessage(error))
-          this.router.navigate(['/catalog']);
-          return EMPTY
-        }))
+        .pipe(
+          takeUntilDestroyed(this.destroyRef),
+          catchError((error: HttpErrorResponse) => {
+            this.toastService.error(getErrorMessage(error))
+            this.router.navigate(['/catalog'])
+            return EMPTY
+          }),
+        )
         .subscribe((product: IProduct) => {
           if (product) {
             this.product.set(product)

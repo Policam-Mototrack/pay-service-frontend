@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core'
 import { CommonModule } from '@angular/common'
 
-export type PaymentStatus = 'pending' | 'confirmed' | 'failed'|'cancelled' | 'authorized'
+export type PaymentStatus = 'pending' | 'confirmed' | 'failed' | 'cancelled' | 'authorized'
 
 @Component({
   selector: 'app-payment-status-modal',
@@ -12,10 +12,10 @@ export type PaymentStatus = 'pending' | 'confirmed' | 'failed'|'cancelled' | 'au
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaymentStatusModalComponent {
-  status = input<PaymentStatus>('pending')
-  email = input<string>('')
+  status = input<PaymentStatus | undefined>(undefined)
+  email = input<string | undefined>(undefined)
   statusText = input<string>('')
-  onReturnHome = output<void>()
+  onPurchasePageClick = output<PaymentStatus>()
 
   getStatusConfig() {
     switch (this.status()) {
@@ -23,7 +23,7 @@ export class PaymentStatusModalComponent {
         return {
           title: 'Оплата успешно завершена',
           description: `Ваш заказ успешно оплачен. Информация о товаре отправлена на email ${this.email() || 'arsipooshka@gmail.com'}`,
-          buttonText: 'Вернуться на главную',
+          buttonText: 'На страницу покупки',
           showWarning: false,
         }
       case 'failed':
@@ -43,7 +43,9 @@ export class PaymentStatusModalComponent {
       case 'authorized':
         return {
           title: 'Платеж авторизован',
-          description: `Деньги зарезервированы на вашей карте. Ожидайте подтверждения платежа. Информация о товаре будет отправлена на email ${this.email() || 'arsipooshka@gmail.com'} после подтверждения.`,
+          description: `Деньги зарезервированы на вашей карте. Ожидайте подтверждения платежа. Информация о товаре будет отправлена на email ${
+            this.email() || 'arsipooshka@gmail.com'
+          } после подтверждения.`,
           buttonText: 'Вернуться на главную',
           showWarning: true,
         }
@@ -51,14 +53,13 @@ export class PaymentStatusModalComponent {
         return {
           title: 'Ожидание оплаты',
           description: `Ваш заказ обрабатывается. Вы получите ваш товар на email ${this.email() || 'arsipooshka@gmail.com'} после оплаты.`,
-          buttonText: 'Вернуться на главную',
+          buttonText: 'Оплатить',
           showWarning: true,
         }
     }
   }
 
-  handleReturnHome(): void {
-    this.onReturnHome.emit()
+  handleReturnHome(status: PaymentStatus): void {
+    this.onPurchasePageClick.emit(status)
   }
 }
-

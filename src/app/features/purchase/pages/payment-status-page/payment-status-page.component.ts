@@ -1,9 +1,15 @@
-import { ChangeDetectionStrategy, Component, inject, input, signal, Signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, signal, Signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { PageContainerComponent } from '../../../../shared/components/layouts/page-container/page-container.component'
 import { PaymentStatusModalComponent, PaymentStatus } from '../../components/payment-status-modal/payment-status-modal.component'
 import { PaymentStatusService } from '../../services/payment-status.service'
+import { PurchasesApiService } from '../../../../core/api/purchases/purchases-api.service'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { catchError, EMPTY } from 'rxjs'
+import { HttpErrorResponse } from '@angular/common/http'
+import { ToastService } from '../../../../core/services/toast.service'
+import { getErrorMessage } from '../../../../shared/utils/error-message.util'
 
 @Component({
   selector: 'app-payment-status-page',
@@ -14,22 +20,51 @@ import { PaymentStatusService } from '../../services/payment-status.service'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaymentStatusPageComponent {
-  email = input<string>('')
-  status = input<string>('Ожидание оплаты...')
   private router = inject(Router)
   private route = inject(ActivatedRoute)
-  public paymentStatus = signal<PaymentStatus>('authorized')
+  private purchaseApiService = inject(PurchasesApiService)
+  private destroyRef = inject(DestroyRef)
+  private toastService = inject(ToastService)
+  private getErrorMessage = getErrorMessage
   purchaseUuid = ''
-  private paymentStatusService = inject(PaymentStatusService)
-  returnToHome(): void {
-    this.router.navigate(['/'])
+  public paymentStatusService = inject(PaymentStatusService)
+  navigateToPurchasePage(status: PaymentStatus): void {
+    switch (status) {
+      case 'confirmed':
+        this.toastService.success('Платеж успешно завершен')
+        break
+      case 'pending':
+        window.open(this.paymentStatusService.purchase()?.paymentUrl || '', '_blank')
+        break
+      case 'failed':
+        this.router.navigate(['/'])
+        break
+      default:
+        this.router.navigate(['/'])
+        break
+    }
+  }
+
+  ngAfterViewInit(): void {
+    this.purchaseApiService
+      .getPurchaseByUuid(this.purchaseUuid)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        catchError((error: HttpErrorResponse) => {
+          this.toastService.error(getErrorMessage(error))
+          return EMPTY
+        }),
+      )
+      .subscribe((purchase) => {
+        window.open(purchase.paymentUrl, '_blank')
+        this.paymentStatusService.purchase.set(purchase)
+        this.paymentStatusService.startPaymentStatusCheck(this.purchaseUuid)
+        
+      })
   }
 
   ngOnInit(): void {
     this.purchaseUuid = this.route.snapshot.params['purchaseUuid']
-    if (this.purchaseUuid) {
-      this.paymentStatusService.startPaymentStatusCheck(this.purchaseUuid)
-    } 
   }
   ngOnDestroy(): void {
     this.paymentStatusService.stopPaymentStatusCheck()

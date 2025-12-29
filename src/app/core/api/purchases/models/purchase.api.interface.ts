@@ -10,6 +10,10 @@ export interface purchaseDTO{
     created_at: string,
     updated_at: string,
     payment_status: PaymentStatus,
+    payer_email: string,
+    payer_phone: string,
+    payment_url: string,
+    service_fee: number,
 }
 
 export interface IPurchaseApiInterface extends BaseServerResponse<purchaseDTO[]> {
@@ -38,5 +42,9 @@ export const DTOPurchase = (purchaseDTO: purchaseDTO): IPurchase => {
         createdAt: purchaseDTO.created_at,
         updatedAt: purchaseDTO.updated_at,
         paymentStatus: purchaseDTO.payment_status,
+        payerEmail: purchaseDTO.payer_email,
+        payerPhone: purchaseDTO.payer_phone,
+        paymentUrl: purchaseDTO.payment_url,
+        serviceFee: purchaseDTO.service_fee/100,
     }
 }
