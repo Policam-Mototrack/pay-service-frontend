@@ -25,6 +25,7 @@ import { PurchaseContactsFactory } from './purchase-contacts.factory'
 import { BaseServerResponse } from '../../../../core/api/shared/models/responses/base-server-response.interface'
 import { IPaymentLink } from '../../../../core/api/purchases/models/bank.api.interface'
 import { BankApiService } from '../../../../core/api/purchases/bank-api.service'
+import { Title } from '@angular/platform-browser'
 
 @Component({
   selector: 'app-purchase-page',
@@ -61,12 +62,12 @@ export class PurchasePageComponent {
   product = signal<IProduct | undefined>(undefined)
   serviceFee = signal<number>(0)
   createdPurchaseUuid: string | undefined
+  private title = inject(Title)
   goBackToProduct(): void {
     if (this._purchaseState() === 'contacts') {
       this._purchaseState.set('initial')
     } else {
-      console.log(this._purchaseState())
-      // this.router.navigate(['/catalog', this.productId])
+      this.router.navigate(['/catalog', this.productId])
     }
   }
   submitForm(): void {
@@ -179,6 +180,7 @@ export class PurchasePageComponent {
           if (product) {
             this.product.set(product)
             this.createPurchaseForm()
+            this.title.setTitle(`${product.name} - Оформление покупки`)
           }
         })
     }

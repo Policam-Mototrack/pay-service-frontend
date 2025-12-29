@@ -10,11 +10,13 @@ import { catchError, EMPTY } from 'rxjs'
 import { HttpErrorResponse } from '@angular/common/http'
 import { ToastService } from '../../../../core/services/toast.service'
 import { getErrorMessage } from '../../../../shared/utils/error-message.util'
+import { BackButtonComponent } from '../../../../shared/components/ui/back-button/back-button.component'
+import { Title } from '@angular/platform-browser'
 
 @Component({
   selector: 'app-payment-status-page',
   standalone: true,
-  imports: [CommonModule, PageContainerComponent, PaymentStatusModalComponent],
+  imports: [CommonModule, PageContainerComponent, PaymentStatusModalComponent, BackButtonComponent],
   templateUrl: './payment-status-page.component.html',
   styleUrl: './payment-status-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,6 +28,7 @@ export class PaymentStatusPageComponent {
   private destroyRef = inject(DestroyRef)
   private toastService = inject(ToastService)
   private getErrorMessage = getErrorMessage
+  private title = inject(Title)
   purchaseUuid = ''
   public paymentStatusService = inject(PaymentStatusService)
   navigateToPurchasePage(status: PaymentStatus): void {
@@ -59,12 +62,12 @@ export class PaymentStatusPageComponent {
         window.open(purchase.paymentUrl, '_blank')
         this.paymentStatusService.purchase.set(purchase)
         this.paymentStatusService.startPaymentStatusCheck(this.purchaseUuid)
-        
       })
   }
 
   ngOnInit(): void {
     this.purchaseUuid = this.route.snapshot.params['purchaseUuid']
+    this.title.setTitle('Статус оплаты')
   }
   ngOnDestroy(): void {
     this.paymentStatusService.stopPaymentStatusCheck()

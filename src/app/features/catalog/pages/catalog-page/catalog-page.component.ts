@@ -11,6 +11,7 @@ import { RouterLink } from '@angular/router'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { DestroyRef } from '@angular/core'
 import { IProduct } from '../../../../core/models/product.interface'
+import { Title } from '@angular/platform-browser'
 @Component({
   selector: 'app-catalog-page',
   standalone: true,
@@ -24,6 +25,7 @@ export class CatalogPageComponent implements OnInit {
   private productTypesApiService = inject(ProductTypesApiService)
   public catalogStore = inject(CatalogStore)
   private destroyRef = inject(DestroyRef)
+  private title = inject(Title)
   getProducts() {
     if (this.catalogStore.products.length > 0) return
     this.productsApiService
@@ -45,6 +47,7 @@ export class CatalogPageComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.title.setTitle('Каталог')
     this.getProducts()
     this.getProductTypes()
   }

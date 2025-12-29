@@ -1,4 +1,6 @@
 <app-page-container>
+  <app-back-button text="← Вернуться назад"></app-back-button>
+
   <div class="payment-status-page">
     <app-payment-status-modal
       [status]="paymentStatusService.purchase()?.paymentStatus"

@@ -9,6 +9,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ProductService } from '../../services/product.service'
 import { getErrorMessage } from '../../../../shared/utils/error-message.util'
 import { ToastService } from '../../../../core/services/toast.service'
+import { Title } from '@angular/platform-browser'
 @Component({
   selector: 'app-product-detail-page',
   standalone: true,
@@ -25,6 +26,7 @@ export class ProductDetailPageComponent {
   private destroyRef = inject(DestroyRef)
   private productService = inject(ProductService)
   private toastService = inject(ToastService)
+  private title = inject(Title)
 
   ngOnInit() {
     this.productId = this.route.snapshot.params['id']
@@ -40,6 +42,7 @@ export class ProductDetailPageComponent {
         .subscribe((product: IProduct) => {
           if (product) {
             this.product.set(product)
+            this.title.setTitle(product.name)
           } else {
             this.router.navigate(['/catalog'])
           }
