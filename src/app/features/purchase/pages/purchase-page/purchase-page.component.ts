@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, signal } from '@angular/core'
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { PageContainerComponent } from '../../../../shared/components/layouts/page-container/page-container.component'
 import { BackButtonComponent } from '../../../../shared/components/ui/back-button/back-button.component'
 import { FormFieldComponent } from '../../../../shared/components/ui/form-field/form-field.component'
@@ -89,12 +89,18 @@ export class PurchasePageComponent {
         this.toastService.error('Вы не авторизованы')
         return
       }
+      // Исключаем чекбоксы из отправляемых данных
+      const formValue = { ...this.purchaseForm.value }
+      delete (formValue as any).personalDataConsent
+      delete (formValue as any).insuranceConfirmation
+      delete (formValue as any).sportsLicenseAgreement
+
       const createPurchase: ICreatePurchase = {
         visitor_uuid: visitorUuid!,
         products: [
           {
             product_id: this.productId!,
-            fields: this.purchaseForm.value,
+            fields: formValue,
           },
         ],
       }
@@ -118,6 +124,11 @@ export class PurchasePageComponent {
   }
   initializePurchaseContactsForm() {
     if (this.purchaseContactsForm && this.createdPurchaseUuid) {
+      this.purchaseContactsForm.markAllAsTouched()
+      if (!this.purchaseContactsForm.valid) {
+        this.toastService.error('Заполните все обязательные поля')
+        return
+      }
       this.bankApiService
         .initializePurchase({
           purchase_uuid: this.createdPurchaseUuid,
@@ -143,6 +154,10 @@ export class PurchasePageComponent {
     return this.purchaseContactsForm?.get(controlName) as FormControl
   }
 
+  getCheckboxControl(controlName: string): FormControl {
+    return this.purchaseForm.get(controlName) as FormControl
+  }
+
   getServiceFee(): number {
     return this.serviceFee()
   }
@@ -158,6 +173,10 @@ export class PurchasePageComponent {
         this.purchaseFields().forEach((field) => {
           this.purchaseForm.addControl(field.name, field.control)
         })
+        // Добавляем контролы для чекбоксов
+        this.purchaseForm.addControl('personalDataConsent', new FormControl(false, [Validators.requiredTrue]))
+        this.purchaseForm.addControl('insuranceConfirmation', new FormControl(false, [Validators.requiredTrue]))
+        this.purchaseForm.addControl('sportsLicenseAgreement', new FormControl(false, [Validators.requiredTrue]))
       } catch (error) {
         console.error('Error creating purchase form:', error)
       }
