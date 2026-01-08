@@ -3,8 +3,23 @@ version: '3.8'
 services:
   pay-service-frontend:
     image: moskowpsix/pay-service-frontend:${TAG:-prod}
-    ports:
-      - '80:80'
+    # Убираем прямой проброс портов - Traefik будет маршрутизировать трафик
+    # ports:
+    #   - '80:80'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pay-front.rule=Host(`pay-service.moto.vokrug.city`)"
+      - "traefik.http.routers.pay-front.entrypoints=websecure"
+      - "traefik.http.routers.pay-front.tls.certresolver=myresolver"
+      - "traefik.http.routers.pay-front.service=pay-front-service"
+      - "traefik.http.services.pay-front-service.loadbalancer.server.port=80"
+      # HTTP router для ACME challenge (без SSL)
+      - "traefik.http.routers.pay-front-http.rule=Host(`pay-service.moto.vokrug.city`)"
+      - "traefik.http.routers.pay-front-http.entrypoints=web"
+      - "traefik.http.routers.pay-front-http.service=pay-front-service"
+      - "traefik.http.routers.pay-front-http.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.docker.network=frontend-network"
     deploy:
       replicas: 2
       update_config:
