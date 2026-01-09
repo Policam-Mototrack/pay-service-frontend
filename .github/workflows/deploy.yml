@@ -71,11 +71,8 @@ jobs:
           username: ${{ secrets.DEV_SERVER_USER }}
           password: ${{ secrets.DEV_SERVER_PASSWORD }}
           script: |
-            # Обновить только образ в существующем сервисе
+            # Обновить образ в сервисе
             docker service update --image ${{ env.IMAGE_NAME }}:dev ${{ secrets.DEV_SERVICE_NAME }}
-            
-            # Проверить статус обновления
-            docker service ps ${{ secrets.DEV_SERVICE_NAME }} --no-trunc
 
   deploy-prod:
     needs: build-and-push
@@ -92,12 +89,5 @@ jobs:
           username: ${{ secrets.PROD_SERVER_USER }}
           password: ${{ secrets.PROD_SERVER_PASSWORD }}
           script: |
-            # Обновить только образ в существующем сервисе
+            # Обновить образ в сервисе
             docker service update --image ${{ env.IMAGE_NAME }}:prod ${{ secrets.PROD_SERVICE_NAME }}
-            
-            # Проверить статус обновления
-            docker service ps ${{ secrets.PROD_SERVICE_NAME }} --no-trunc
-            
-            # Дождаться завершения обновления и проверить здоровье
-            sleep 15
-            curl -f http://localhost/health || echo "Health check failed, but deployment completed"
