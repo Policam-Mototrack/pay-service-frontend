@@ -1,4 +1,4 @@
-import { PaymentStatus } from "../../features/purchase/components/payment-status-modal/payment-status-modal.component";
+import { PaymentStatus } from "../../features/purchase/models/payment-status";
 import { IProduct } from "./product.interface";
 
 export interface IPurchase {

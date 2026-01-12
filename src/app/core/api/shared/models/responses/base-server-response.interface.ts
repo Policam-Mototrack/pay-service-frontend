@@ -4,3 +4,5 @@ export interface BaseServerResponse<T> {
     status: number;
     success: boolean;
 }
+
+export type BaseServerBinaryFileResponse = Blob;

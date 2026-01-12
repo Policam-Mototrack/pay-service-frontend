@@ -1,0 +1,41 @@
+:host {
+    width: 100% !important;
+}
+.standart-button {
+    width: 100% !important;
+    &.secondary {
+        width: 100%;
+        background: #1a1a1a;
+        color: #ffffff;
+        border: none;
+        padding: 16px 32px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        font-family: inherit;
+    
+        &:hover {
+          background: #333333;
+        }
+    
+        &:active {
+          background: #000000;
+        }
+    }
+    
+    &.primary {
+        width: 100%;
+        background: #22C55E;
+        color: #ffffff;
+        border: none;
+        padding: 16px 32px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        font-family: inherit;
+    }
+}

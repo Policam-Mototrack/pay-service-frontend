@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core'
 import { CommonModule } from '@angular/common'
-
-export type PaymentStatus = 'pending' | 'confirmed' | 'failed' | 'cancelled' | 'authorized'
+import { StandartButtonComponent } from '../../../../shared/components/ui/standart-button/standart-button.component'
+import { PaymentAction } from '../../models/payment-status'
+import { PaymentStatus } from '../../models/payment-status'
+import { IPurchase } from '../../../../core/models/purchase.interface'
 
 @Component({
   selector: 'app-payment-status-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, StandartButtonComponent],
   templateUrl: './payment-status-modal.component.html',
   styleUrl: './payment-status-modal.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,8 +16,28 @@ export type PaymentStatus = 'pending' | 'confirmed' | 'failed' | 'cancelled' | '
 export class PaymentStatusModalComponent {
   status = input<PaymentStatus | undefined>(undefined)
   email = input<string | undefined>(undefined)
+  purchaseUuid = input<string | undefined>(undefined)
+  getAction = output<PaymentAction>()
   statusText = input<string>('')
+  statusActions = input<{
+    confirmed?: PaymentAction[]
+    failed?: PaymentAction[]
+    cancelled?: PaymentAction[]
+    authorized?: PaymentAction[]
+    pending?: PaymentAction[]
+  }>()
   onPurchasePageClick = output<PaymentStatus>()
+
+  getStatusActions() {
+    return this.statusActions()?.[this.status() || 'pending'] || []
+  }
+
+  emitAction(action: PaymentAction) {
+    this.getAction.emit({
+      ...action,
+      data: { uuid: this?.purchaseUuid() || '' },
+    })
+  }
 
   getStatusConfig() {
     switch (this.status()) {
@@ -49,7 +71,7 @@ export class PaymentStatusModalComponent {
           buttonText: 'Вернуться на главную',
           showWarning: true,
         }
-      default: // pending
+      default:
         return {
           title: 'Ожидание оплаты',
           description: `Ваш заказ обрабатывается. Вы получите ваш товар на email ${this.email() || 'arsipooshka@gmail.com'} после оплаты.`,

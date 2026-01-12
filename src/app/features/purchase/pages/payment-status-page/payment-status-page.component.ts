@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, signal, 
 import { CommonModule } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { PageContainerComponent } from '../../../../shared/components/layouts/page-container/page-container.component'
-import { PaymentStatusModalComponent, PaymentStatus } from '../../components/payment-status-modal/payment-status-modal.component'
+import { PaymentStatusModalComponent } from '../../components/payment-status-modal/payment-status-modal.component'
+import { PaymentAction, PaymentStatus } from '../../models/payment-status'
 import { PaymentStatusService } from '../../services/payment-status.service'
 import { PurchasesApiService } from '../../../../core/api/purchases/purchases-api.service'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
@@ -12,7 +13,7 @@ import { ToastService } from '../../../../core/services/toast.service'
 import { getErrorMessage } from '../../../../shared/utils/error-message.util'
 import { BackButtonComponent } from '../../../../shared/components/ui/back-button/back-button.component'
 import { Title } from '@angular/platform-browser'
-
+import { PAYMENT_STATUS_ACTIONS } from '../../constants/payment-status-actions'
 @Component({
   selector: 'app-payment-status-page',
   standalone: true,
@@ -31,6 +32,7 @@ export class PaymentStatusPageComponent {
   private title = inject(Title)
   purchaseUuid = ''
   public paymentStatusService = inject(PaymentStatusService)
+  public paymentStatusActions = PAYMENT_STATUS_ACTIONS
   navigateToPurchasePage(status: PaymentStatus): void {
     switch (status) {
       case 'confirmed':
@@ -47,7 +49,15 @@ export class PaymentStatusPageComponent {
         break
     }
   }
-
+  getPaymentStatus() {
+    return this.paymentStatusService.purchase()?.paymentStatus || 'pending'
+  }
+  getPaymentStatusActions() {
+    return this.paymentStatusActions
+  }
+  setAction(action:PaymentAction){
+    this.paymentStatusService.getAction(action)
+  }
   ngAfterViewInit(): void {
     this.purchaseApiService
       .getPurchaseByUuid(this.purchaseUuid)

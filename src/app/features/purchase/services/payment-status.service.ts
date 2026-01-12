@@ -1,10 +1,13 @@
 import { inject, Injectable, signal } from "@angular/core"
 import { IPurchase } from "../../../core/models/purchase.interface"
 import { PurchasesApiService } from "../../../core/api/purchases/purchases-api.service"
+import { PaymentAction } from "../models/payment-status"
+import { PaymentStatusActionsService } from "./payment-status-actions.service"
 @Injectable({
     providedIn: 'root'
 })
 export class PaymentStatusService {
+    private paymentStatusActionsService:PaymentStatusActionsService = inject(PaymentStatusActionsService)
     private purchaseCheckInterval = 2500
     private purchaseCheckTimer: ReturnType<typeof setInterval> | null = null
     public purchase = signal<IPurchase | null>(null)
@@ -24,5 +27,8 @@ export class PaymentStatusService {
             clearInterval(this.purchaseCheckTimer)
             this.purchaseCheckTimer = null
         }
+    }
+    public getAction(action:PaymentAction){
+        return this.paymentStatusActionsService.records[action.action]({...action?.data})
     }
 }

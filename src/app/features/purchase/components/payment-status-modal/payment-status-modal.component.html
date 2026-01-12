@@ -57,10 +57,23 @@
     </div>
   </div>
   }
-
-  <button class="payment-status-modal__button" (click)="handleReturnHome(status() || 'pending')">
-    {{ getStatusConfig().buttonText }}
-  </button>
+  <div class="payment-status-modal__actions-grid">
+    @for (action of getStatusActions(); track action.text) {
+    <app-standart-button
+      [text]="action.text"
+      [theme]="action.theme || 'secondary'"
+      [type]="'button'"
+      (click)="emitAction(action)"
+    ></app-standart-button>
+    } @empty {
+    <app-standart-button
+      [text]="getStatusConfig().buttonText"
+      [theme]="'secondary'"
+      [type]="'button'"
+      (click)="handleReturnHome(status() || 'pending')"
+    ></app-standart-button>
+    }
+  </div>
 
   @if (getStatusConfig().showWarning) {
   <span class="payment-status-modal__warning">Не закрывайте эту страницу пока платеж не будет завершен</span>
