@@ -1,7 +1,7 @@
 import { DTOProduct, productDTO } from "../../products/models/produсts.api.interface";
 import { BaseServerResponse } from "../../shared/models/responses/base-server-response.interface";
 import { IPurchase } from "../../../models/purchase.interface";
-import { PaymentStatus } from "../../../../features/purchase/components/payment-status-modal/payment-status-modal.component";
+import { PaymentStatus } from "../../../../features/purchase/models/payment-status";
 export interface purchaseDTO{
     uuid: string,
     visitor_uuid: string,
