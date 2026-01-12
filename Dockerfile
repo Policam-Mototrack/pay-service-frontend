@@ -18,6 +18,8 @@ COPY . .
 # Build Angular application based on BUILD_ENV
 RUN if [ "$BUILD_ENV" = "dev" ]; then \
       npm run build -- --configuration dev; \
+    elif [ "$BUILD_ENV" = "production" ]; then \
+      npm run build -- --configuration production; \
     else \
       npm run build -- --configuration production; \
     fi
