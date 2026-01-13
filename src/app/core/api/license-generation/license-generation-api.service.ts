@@ -10,4 +10,8 @@ export class LicensesGenerationApiService {
   generationLicensesFile(uuid: string) {
     return this.http.post(`${environment.apiUrl}/licenses/licenses/download/${uuid}`, {}, { responseType: 'blob' })
   }
+  sendLicensesFile(uuid: string) {
+    return this.http.post(`${environment.apiUrl}/licenses/licenses/send/${uuid}`, {})
+  }
+
 }

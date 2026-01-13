@@ -9,7 +9,7 @@ export const PAYMENT_STATUS_ACTIONS: PaymentStatusActions = {
     {
       text: 'Отпарвить на почту еще раз',
       theme: 'secondary',
-      action:'reset_email'
+      action:'resetEmail'
     },
   ],
 }

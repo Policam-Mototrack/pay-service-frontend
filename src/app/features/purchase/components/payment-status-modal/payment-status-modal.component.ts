@@ -4,6 +4,7 @@ import { StandartButtonComponent } from '../../../../shared/components/ui/standa
 import { PaymentAction } from '../../models/payment-status'
 import { PaymentStatus } from '../../models/payment-status'
 import { IPurchase } from '../../../../core/models/purchase.interface'
+import { IProduct } from '../../../../core/models/product.interface'
 
 @Component({
   selector: 'app-payment-status-modal',
@@ -16,6 +17,7 @@ import { IPurchase } from '../../../../core/models/purchase.interface'
 export class PaymentStatusModalComponent {
   status = input<PaymentStatus | undefined>(undefined)
   email = input<string | undefined>(undefined)
+  product = input<IProduct | undefined>(undefined) 
   purchaseUuid = input<string | undefined>(undefined)
   getAction = output<PaymentAction>()
   statusText = input<string>('')
@@ -35,7 +37,7 @@ export class PaymentStatusModalComponent {
   emitAction(action: PaymentAction) {
     this.getAction.emit({
       ...action,
-      data: { uuid: this?.purchaseUuid() || '' },
+      data: { uuid: this?.purchaseUuid() || '', product:this.product() },
     })
   }
 
