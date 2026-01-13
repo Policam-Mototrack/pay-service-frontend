@@ -9,4 +9,5 @@ export interface AnonymousAuthApiInterface extends BaseServerResponse<AnonymousA
     message: string;
     status: number;
     success: boolean;
+     
 }

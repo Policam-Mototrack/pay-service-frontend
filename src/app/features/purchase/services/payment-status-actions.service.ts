@@ -29,6 +29,7 @@ export class PaymentStatusActionsService {
   records: Record<ActionsIds, (payload: { uuid?: string }) => any> = {
     download: (payload) => {
       return this.licenseGeneration(payload.uuid)
+      
     },
     reset_email: (payload) => {},
   }
