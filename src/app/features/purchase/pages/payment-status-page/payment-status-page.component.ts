@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, signal, Signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, input, signal, Signal, untracked } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
 import { PageContainerComponent } from '../../../../shared/components/layouts/page-container/page-container.component'
@@ -13,6 +13,8 @@ import { ToastService } from '../../../../core/services/toast.service'
 import { getErrorMessage } from '../../../../shared/utils/error-message.util'
 import { BackButtonComponent } from '../../../../shared/components/ui/back-button/back-button.component'
 import { Title } from '@angular/platform-browser'
+
+import { LicensesGenerationApiService } from '../../../../core/api/license-generation/license-generation-api.service'
 import { PAYMENT_STATUS_ACTIONS } from '../../constants/payment-status-actions'
 @Component({
   selector: 'app-payment-status-page',
@@ -23,13 +25,17 @@ import { PAYMENT_STATUS_ACTIONS } from '../../constants/payment-status-actions'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaymentStatusPageComponent {
+  constructor() {
+    this.listenConfrimed()
+  }
   private router = inject(Router)
   private route = inject(ActivatedRoute)
   private purchaseApiService = inject(PurchasesApiService)
   private destroyRef = inject(DestroyRef)
   private toastService = inject(ToastService)
-  private getErrorMessage = getErrorMessage
   private title = inject(Title)
+  private send: boolean = false
+  private licensesGenerationApiService = inject(LicensesGenerationApiService)
   purchaseUuid = ''
   public paymentStatusService = inject(PaymentStatusService)
   public paymentStatusActions = PAYMENT_STATUS_ACTIONS
@@ -52,11 +58,39 @@ export class PaymentStatusPageComponent {
   getPaymentStatus() {
     return this.paymentStatusService.purchase()?.paymentStatus || 'pending'
   }
+  listenConfrimed() {
+    effect(() => {
+      if (this.paymentStatusService.purchase()?.paymentStatus === 'confirmed' && !this.send) {
+        console.log('отправляю на почту')
+        this.send = true
+        untracked(() => {
+          this.licensesGenerationApiService
+            .sendLicensesFile(this.purchaseUuid)
+            .pipe(
+              takeUntilDestroyed(this.destroyRef),
+              catchError((error: HttpErrorResponse) => {
+                console.error('Error creating purchase:', error)
+
+                return EMPTY
+              }),
+            )
+            .subscribe((response) => {
+              if (response) {
+                this.toastService.success('Товары отправлены на почту')
+              }
+            })
+        })
+      }
+    })
+  }
   getPaymentStatusActions() {
     return this.paymentStatusActions
   }
-  setAction(action:PaymentAction){
+  setAction(action: PaymentAction) {
     this.paymentStatusService.getAction(action)
+  }
+  get purchaseProduct() {
+    return this.paymentStatusService.purchase()?.products[0]
   }
   ngAfterViewInit(): void {
     this.purchaseApiService

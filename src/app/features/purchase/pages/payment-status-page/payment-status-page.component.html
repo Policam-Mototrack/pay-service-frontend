@@ -4,6 +4,7 @@
   <div class="payment-status-page">
     <app-payment-status-modal
       [purchaseUuid]="purchaseUuid"
+      [product]="purchaseProduct"
       [status]="paymentStatusService.purchase()?.paymentStatus"
       [email]="paymentStatusService.purchase()?.payerEmail"
       [statusActions]="getPaymentStatusActions() "
