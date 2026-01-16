@@ -5,7 +5,7 @@ import { BackButtonComponent } from '../../../../shared/components/ui/back-butto
 import { FormFieldComponent } from '../../../../shared/components/ui/form-field/form-field.component'
 import { RadioGroupComponent, RadioOption } from '../../../../shared/components/ui/radio-group/radio-group.component'
 import { DatePickerComponent } from '../../../../shared/components/ui/date-picker/date-picker.component'
-import { CommonModule } from '@angular/common'
+import { CommonModule, DatePipe } from '@angular/common'
 import { ProductService } from '../../../catalog/services/product.service'
 import { IProduct } from '../../../../core/models/product.interface'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
@@ -43,6 +43,7 @@ import { Title } from '@angular/platform-browser'
   templateUrl: './purchase-page.component.html',
   styleUrl: './purchase-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [DatePipe],
 })
 export class PurchasePageComponent {
   private productService = inject(ProductService)
@@ -50,6 +51,7 @@ export class PurchasePageComponent {
   private route = inject(ActivatedRoute)
   private purchasesApiService = inject(PurchasesApiService)
   private productId?: number
+  private datePipe: DatePipe = inject(DatePipe)
   private anonymousAuthService = inject(AnonymousAuthService)
   public purchaseFields = signal<IGeneratedField[]>([])
   purchaseForm = new FormGroup({})
@@ -77,7 +79,15 @@ export class PurchasePageComponent {
       this.initializePurchaseContactsForm()
     }
   }
+
+  formatDateInFields(formValue: any) {
+    let fields = this.purchaseFields().filter((field: IGeneratedField) => field.type == 'date')
+    fields.forEach((field) => formValue[field.name] = this.datePipe.transform(formValue[field.name], 'dd.MM.yyyy'))
+  }
   createPurchase(): void {
+    let tempFormValue = { ...this.purchaseForm.value } //Потом убрать
+    this.formatDateInFields(tempFormValue) //потом убрать
+
     this.purchaseForm.markAllAsTouched()
     if (!this.purchaseForm.valid) {
       this.toastService.error('Заполните все обязательные поля')
@@ -91,6 +101,7 @@ export class PurchasePageComponent {
       }
       // Исключаем чекбоксы из отправляемых данных
       const formValue = { ...this.purchaseForm.value }
+      this.formatDateInFields(formValue)
       delete (formValue as any).personalDataConsent
       delete (formValue as any).insuranceConfirmation
       delete (formValue as any).sportsLicenseAgreement

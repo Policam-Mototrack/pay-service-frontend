@@ -14,7 +14,7 @@ export class PaymentStatusService {
     private purchasesApiService = inject(PurchasesApiService)
     public startPaymentStatusCheck(purchaseUuid: string): void {
         this.purchaseCheckTimer = setInterval(() => {
-            if (this.purchase()?.paymentStatus != 'pending') {
+            if (this.purchase()?.paymentStatus != 'pending' && this.purchase()?.paymentStatus != 'authorized') {
                 this.stopPaymentStatusCheck()
             }
             this.purchasesApiService.getPurchaseByUuidNoLoader(purchaseUuid).subscribe((purchase) => {

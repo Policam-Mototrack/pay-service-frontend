@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common'
 import { StandartButtonComponent } from '../../../../shared/components/ui/standart-button/standart-button.component'
 import { PaymentAction } from '../../models/payment-status'
 import { PaymentStatus } from '../../models/payment-status'
-import { IPurchase } from '../../../../core/models/purchase.interface'
 import { IProduct } from '../../../../core/models/product.interface'
 
 @Component({
@@ -17,7 +16,7 @@ import { IProduct } from '../../../../core/models/product.interface'
 export class PaymentStatusModalComponent {
   status = input<PaymentStatus | undefined>(undefined)
   email = input<string | undefined>(undefined)
-  product = input<IProduct | undefined>(undefined) 
+  product = input<IProduct | undefined>(undefined)
   purchaseUuid = input<string | undefined>(undefined)
   getAction = output<PaymentAction>()
   statusText = input<string>('')
