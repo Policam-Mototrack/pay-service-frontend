@@ -40,6 +40,7 @@ export class PaymentStatusPageComponent {
   public paymentStatusService = inject(PaymentStatusService)
   public paymentStatusActions = PAYMENT_STATUS_ACTIONS
   navigateToPurchasePage(status: PaymentStatus): void {
+    console.log(status)
     switch (status) {
       case 'confirmed':
         this.toastService.success('Платеж успешно завершен')
@@ -103,7 +104,9 @@ export class PaymentStatusPageComponent {
         }),
       )
       .subscribe((purchase) => {
-        window.open(purchase.paymentUrl, '_blank')
+        if(purchase.paymentStatus == 'pending'){
+          window.open(purchase.paymentUrl, '_blank')
+        }
         this.paymentStatusService.purchase.set(purchase)
         this.paymentStatusService.startPaymentStatusCheck(this.purchaseUuid)
       })
