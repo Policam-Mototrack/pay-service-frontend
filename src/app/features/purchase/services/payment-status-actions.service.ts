@@ -19,7 +19,7 @@ export class PaymentStatusActionsService {
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
-        a.download = product.name || 'Лицензия'
+        a.download = (product.name || 'Лицензия')+'.pdf'
         a.click()
         URL.revokeObjectURL(url)
       })
