@@ -7,7 +7,7 @@ export const PAYMENT_STATUS_ACTIONS: PaymentStatusActions = {
       action:'download'
     },
     {
-      text: 'Отпарвить на почту еще раз',
+      text: 'Отправить на почту еще раз',
       theme: 'secondary',
       action:'resetEmail'
     },
