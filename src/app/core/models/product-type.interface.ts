@@ -2,6 +2,7 @@ export type ProductTypeFieldType = 'string' | 'number' | 'boolean' | 'date' | 's
 export interface IProductTypeField {
   title: string
   type: ProductTypeFieldType
+  data?: any
 }
 export interface IProductType {
   id: number

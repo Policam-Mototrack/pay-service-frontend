@@ -10,6 +10,7 @@ export class PurchaseFactory {
         name: field.title,
         title: field.title,
         type: field.type,
+        data: field.data,
         control: new FormControl('', [Validators.required]),
       })
     })
