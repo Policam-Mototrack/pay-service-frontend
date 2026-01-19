@@ -3,7 +3,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms'
 import { CommonModule } from '@angular/common'
 
 export interface RadioOption {
-  value: string
+  value: string | boolean
   label: string
 }
 

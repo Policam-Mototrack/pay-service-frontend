@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
 import { CommonModule } from '@angular/common'
-
+import { IGeneratedField } from '../../../../features/purchase/models/generated-field'
+import { ProductTypeFieldType } from '../../../../core/models/product-type.interface'
 @Component({
   selector: 'app-form-field',
   standalone: true,
@@ -27,7 +28,7 @@ export class FormFieldComponent {
   type = input<string>('text')
 
   // Тип поля (input, select, textarea)
-  fieldType = input<'input' | 'select' | 'textarea'>('input')
+  fieldType = input<ProductTypeFieldType>('string')
 
   // Опции для select
   options = input<{ value: string; label: string }[]>([])

@@ -27,6 +27,7 @@
           [label]="field.title"
           [required]="true"
           [type]="field.type"
+          [fieldType]="'number'"
           [hasError]="!field.control.valid && field.control.touched"
           [errorMessage]="field.control | localizeFieldError"
           [placeholder]="field.title"
@@ -39,11 +40,23 @@
           [hasError]="!field.control.valid && field.control.touched"
           [required]="true"
           [options]="[
-            { value: 'true', label: 'Да' },
-            { value: 'false', label: 'Нет' }
+            { value: true, label: 'Да' },
+            { value: false, label: 'Нет' }
           ]"
           [name]="field.name"
         ></app-radio-group>
+        } @case ('select') {
+        <app-form-field
+          [control]="field.control"
+          [label]="field.title"
+          [required]="true"
+          [fieldType]="'select'"
+          [hasError]="!field.control.valid && field.control.touched"
+          [errorMessage]="field.control | localizeFieldError"
+          [placeholder]="field.title"
+          [fieldId]="field.name"
+          [options]="field.data || []"
+        ></app-form-field>
         } @case ('date') {
         <app-date-picker
           [hasError]="!field.control.valid && field.control.touched"
@@ -53,6 +66,17 @@
           [placeholder]="field.title"
           [fieldId]="field.name"
         ></app-date-picker>
+        } @case ('textarea') {
+        <app-form-field
+          [hasError]="!field.control.valid && field.control.touched"
+          [control]="field.control"
+          [label]="field.title"
+          [required]="true"
+          [fieldType]="'textarea'"
+          [type]="field.type"
+          [placeholder]="field.title"
+          [fieldId]="field.name"
+        ></app-form-field>
         } @default {
         <app-form-field
           [hasError]="!field.control.valid && field.control.touched"
@@ -67,14 +91,12 @@
 
         <div class="purchase-page__checkboxes">
           <label class="purchase-page__checkbox-label">
-            <input
-              type="checkbox"
-              [formControl]="getCheckboxControl('personalDataConsent')"
-              class="purchase-page__checkbox"
-            />
+            <input type="checkbox" [formControl]="getCheckboxControl('personalDataConsent')" class="purchase-page__checkbox" />
             <span class="purchase-page__checkbox-text">
-              Предоставляя данные я даю 
-              <a href="https://moto.vokrug.city/user-politic" target="_blank" class="purchase-page__checkbox-link">согласие на обработку ПДн(ФиО, дата рождения...)</a>
+              Предоставляя данные я даю
+              <a href="https://moto.vokrug.city/user-politic" target="_blank" class="purchase-page__checkbox-link"
+                >согласие на обработку ПДн(ФиО, дата рождения...)</a
+              >
             </span>
           </label>
           @if (!getCheckboxControl('personalDataConsent').valid && getCheckboxControl('personalDataConsent').touched) {
@@ -82,11 +104,7 @@
           }
 
           <label class="purchase-page__checkbox-label">
-            <input
-              type="checkbox"
-              [formControl]="getCheckboxControl('insuranceConfirmation')"
-              class="purchase-page__checkbox"
-            />
+            <input type="checkbox" [formControl]="getCheckboxControl('insuranceConfirmation')" class="purchase-page__checkbox" />
             <span class="purchase-page__checkbox-text">
               Подтверждаю, что обладаю действующим страховым полисом страхования жизни и здоровья от несчастных случаев и медицинским допуском.
             </span>
@@ -96,11 +114,7 @@
           }
 
           <label class="purchase-page__checkbox-label">
-            <input
-              type="checkbox"
-              [formControl]="getCheckboxControl('sportsLicenseAgreement')"
-              class="purchase-page__checkbox"
-            />
+            <input type="checkbox" [formControl]="getCheckboxControl('sportsLicenseAgreement')" class="purchase-page__checkbox" />
             <span class="purchase-page__checkbox-text">
               Ознакомлен и согласен с
               <a
@@ -118,7 +132,10 @@
         </div>
 
         <button type="submit" class="purchase-page__submit">Оформить покупку</button>
-        <p class="purchase-page__terms">Оформляя покупку, вы соглашаетесь с <a href="https://moto.vokrug.city/offer" target="_blank" class="purchase-page__terms-link">публичной офертой</a></p>
+        <p class="purchase-page__terms">
+          Оформляя покупку, вы соглашаетесь с
+          <a href="https://moto.vokrug.city/offer" target="_blank" class="purchase-page__terms-link">публичной офертой</a>
+        </p>
       </form>
       } @if (purchaseContactsForm && _purchaseState() === 'contacts') {
       <div class="purchase-page__contacts-section">

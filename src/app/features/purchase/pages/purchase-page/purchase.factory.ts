@@ -13,6 +13,29 @@ export class PurchaseFactory {
         control: new FormControl('', [Validators.required]),
       })
     })
+    //Моковые данные
+    // generatedFields.push({
+    //   name: 'Тестовый список',
+    //   title: 'Тестовый список',
+    //   type: 'select',
+    //   data: [
+    //     { value: '1', label: 'Первый' },
+    //     { value: '2', label: 'Второй' },
+    //   ],
+    //   control: new FormControl('', [Validators.required]),
+    // })
+    // generatedFields.push({
+    //   name: 'Тестовый чекбокс',
+    //   title: 'Тестовый чекбокс',
+    //   type: 'boolean',
+    //   control: new FormControl('', [Validators.required]),
+    // })
+    // generatedFields.push({
+    //   name: 'Тестовый текст',
+    //   title: 'Тестовый текст',
+    //   type: 'textarea',
+    //   control: new FormControl('', [Validators.required]),
+    // })
     return generatedFields
   }
 }

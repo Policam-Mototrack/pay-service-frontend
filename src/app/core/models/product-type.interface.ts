@@ -1,6 +1,7 @@
+export type ProductTypeFieldType = 'string' | 'number' | 'boolean' | 'date' | 'select'|'textarea'
 export interface IProductTypeField {
   title: string
-  type: 'string' | 'number' | 'boolean' | 'date'
+  type: ProductTypeFieldType
 }
 export interface IProductType {
   id: number
