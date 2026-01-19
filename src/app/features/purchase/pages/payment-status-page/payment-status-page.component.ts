@@ -26,7 +26,7 @@ import { PAYMENT_STATUS_ACTIONS } from '../../constants/payment-status-actions'
 })
 export class PaymentStatusPageComponent {
   constructor() {
-    this.listenConfrimed()
+    // this.listenConfrimed()
   }
   private router = inject(Router)
   private route = inject(ActivatedRoute)
@@ -62,7 +62,6 @@ export class PaymentStatusPageComponent {
   listenConfrimed() {
     effect(() => {
       if (this.paymentStatusService.purchase()?.paymentStatus === 'confirmed' && !this.send) {
-        console.log('отправляю на почту')
         this.send = true
         untracked(() => {
           this.licensesGenerationApiService
