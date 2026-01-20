@@ -19,7 +19,7 @@ export class PaymentStatusActionsService {
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
-        a.download = (product.name || 'Лицензия')+'.pdf'
+        a.download = (product.name || 'Лицензия') + '.pdf'
         a.click()
         URL.revokeObjectURL(url)
       })
@@ -28,26 +28,39 @@ export class PaymentStatusActionsService {
       return of(null)
     }
   }
+  private redirectToPay(url?: string) {
+    if (url && typeof url === 'string') {
+      try {
+        window.open(url, '_blank')
+      } catch (e) {}
+    }
+  }
   private resetEmail(uuid?: string) {
-    if(uuid){
-      return this.licensesGenerationApiService.sendLicensesFile(uuid).pipe(
-        catchError((err)=>{
-          this.toastService.error('Ошибка при отправке товаров')
-          return EMPTY;
+    if (uuid) {
+      return this.licensesGenerationApiService
+        .sendLicensesFile(uuid)
+        .pipe(
+          catchError((err) => {
+            this.toastService.error('Ошибка при отправке товаров')
+            return EMPTY
+          }),
+        )
+        .subscribe((res) => {
+          this.toastService.success('Товары отправлены')
         })
-      ).subscribe((res)=>{
-        this.toastService.success('Товары отправлены')
-      })
-    }else{
+    } else {
       return of(null)
     }
   }
-  records: Record<ActionsIds, (payload: { uuid?: string; product?: IProduct }) => any> = {
+  records: Record<ActionsIds, (payload: { uuid?: string; product?: IProduct, payUrl?: string }) => any> = {
     download: (payload) => {
       return this.licenseGeneration(payload.uuid, payload.product)
     },
     resetEmail: (payload) => {
       this.resetEmail(payload.uuid)
+    },
+    redirectToPay: (payload) => {
+      this.redirectToPay(payload.payUrl)
     },
   }
 }

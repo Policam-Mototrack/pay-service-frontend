@@ -1,15 +1,22 @@
-import { PaymentStatusActions } from "../models/payment-status"
+import { PaymentStatusActions } from '../models/payment-status'
 export const PAYMENT_STATUS_ACTIONS: PaymentStatusActions = {
   confirmed: [
     {
       text: 'Скачать товар',
       theme: 'primary',
-      action:'download'
+      action: 'download',
     },
     {
       text: 'Отправить на почту еще раз',
       theme: 'secondary',
-      action:'resetEmail'
+      action: 'resetEmail',
+    },
+  ],
+  pending: [
+    {
+      text: 'Перейти к оплате',
+      theme: 'tertiary',
+      action: 'redirectToPay',
     },
   ],
 }

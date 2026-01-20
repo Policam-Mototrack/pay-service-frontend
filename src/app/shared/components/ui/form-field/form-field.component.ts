@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
 import { CommonModule } from '@angular/common'
-import { IGeneratedField } from '../../../../features/purchase/models/generated-field'
 import { ProductTypeFieldType } from '../../../../core/models/product-type.interface'
 @Component({
   selector: 'app-form-field',

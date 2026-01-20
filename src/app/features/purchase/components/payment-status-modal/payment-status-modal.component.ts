@@ -18,6 +18,7 @@ export class PaymentStatusModalComponent {
   email = input<string | undefined>(undefined)
   product = input<IProduct | undefined>(undefined)
   purchaseUuid = input<string | undefined>(undefined)
+  purchasePayUrl = input<string | undefined>(undefined)
   getAction = output<PaymentAction>()
   statusText = input<string>('')
   statusActions = input<{
@@ -36,7 +37,7 @@ export class PaymentStatusModalComponent {
   emitAction(action: PaymentAction) {
     this.getAction.emit({
       ...action,
-      data: { uuid: this?.purchaseUuid() || '', product:this.product() },
+      data: { uuid: this?.purchaseUuid() || '', product:this.product(), payUrl: this.purchasePayUrl() },
     })
   }
 
