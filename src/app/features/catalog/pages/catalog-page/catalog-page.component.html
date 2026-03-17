@@ -3,7 +3,11 @@
   <h2>На этой странице представлен каталог товаров и лицензий.</h2>
 
   <div class="catalog-grid" *ngIf="catalogStore.products.length > 0">
-    <app-product-card [routerLink]="['/catalog', product.id]" *ngFor="let product of catalogStore.products" [product]="product"> </app-product-card>
+    @for (product of catalogStore.products; track product.id) {
+      @if (product && product.isVisible) {
+        <app-product-card [routerLink]="['/catalog', product.id]"> </app-product-card>
+      }
+    }
   </div>
 
   <div *ngIf="catalogStore.products.length === 0" class="empty-state">

@@ -6,8 +6,11 @@ export interface productDTO {
   name: string
   price: number
   description?: string
-  tax: string
-  product_type: productTypeDTO
+  tax: string,
+  product_type: productTypeDTO,
+  is_visible:boolean,
+  is_url:boolean,
+  url:string|null,
 }
 export interface IProductApiInterface extends BaseServerResponse<productDTO[]> {
   data: productDTO[]
@@ -22,6 +25,9 @@ export const DTOProduct = (productDTO: productDTO): IProduct => {
     price: productDTO?.price / 100,
     description: productDTO?.description,
     productType: DTOProductType(productDTO?.product_type),
+    isUrl:productDTO?.is_url,
+    url:productDTO?.url,
+    isVisible:productDTO?.is_visible,
   }
 }
 export interface IProductFilter {

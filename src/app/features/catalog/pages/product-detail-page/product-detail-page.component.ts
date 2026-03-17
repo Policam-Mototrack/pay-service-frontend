@@ -27,7 +27,13 @@ export class ProductDetailPageComponent {
   private productService = inject(ProductService)
   private toastService = inject(ToastService)
   private title = inject(Title)
-
+  navigateToPurchasePage() {
+    if (this.product()?.isUrl) {
+      window.open(this.product()?.url ?? '', '_blank')
+    } else {
+      this.router.navigate(['/purchase', this.productId])
+    }
+  }
   ngOnInit() {
     this.productId = this.route.snapshot.params['id']
     if (this.productId) {

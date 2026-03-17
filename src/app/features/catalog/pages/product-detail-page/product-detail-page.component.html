@@ -22,7 +22,7 @@
           <div class="product-detail__price-info">
             <span class="product-detail__price">{{ productData.price }} ₽</span>
           </div>
-          <button [routerLink]="['/purchase', productData.id]" class="product-detail__button">Купить</button>
+          <button (click)="navigateToPurchasePage()" class="product-detail__button">Купить</button>
         </div>
       </div>
     </div>
