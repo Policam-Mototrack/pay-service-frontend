@@ -5,7 +5,7 @@
   <div class="catalog-grid" *ngIf="catalogStore.products.length > 0">
     @for (product of catalogStore.products; track product.id) {
       @if (product && product.isVisible) {
-        <app-product-card [routerLink]="['/catalog', product.id]"> </app-product-card>
+        <app-product-card [product]="product" [routerLink]="['/catalog', product.id]"> </app-product-card>
       }
     }
   </div>
