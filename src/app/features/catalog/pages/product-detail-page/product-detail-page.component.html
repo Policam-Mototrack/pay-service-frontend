@@ -22,7 +22,10 @@
           <div class="product-detail__price-info">
             <span class="product-detail__price">{{ productData.price }} ₽</span>
           </div>
-          <button (click)="navigateToPurchasePage()" class="product-detail__button">Купить</button>
+          <div class="product-detail__actions">
+            <button (click)="navigateToPurchasePage()" class="product-detail__button">Купить</button>
+            <a href="https://moto.vokrug.city/offer" target="_blank" rel="noopener noreferrer" class="product-detail__offer-link">Публичная оферта</a>
+          </div>
         </div>
       </div>
     </div>
