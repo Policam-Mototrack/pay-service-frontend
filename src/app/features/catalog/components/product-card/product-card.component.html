@@ -8,7 +8,7 @@
     <p class="product-card__description">{{ product.productType?.name || 'Описание отсутствует' }}</p>
     
     <div class="product-card__footer">
-      <span class="product-card__price">{{ product.price }} ₽</span>
+      <span class="product-card__price">{{ product.minPrice ? 'от ' : '' }}{{ product.price }} ₽</span>
       <button class="product-card__button">Подробнее</button>
     </div>
   </div>

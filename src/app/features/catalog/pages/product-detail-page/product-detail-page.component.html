@@ -20,11 +20,13 @@
 
         <div class="product-detail__footer">
           <div class="product-detail__price-info">
-            <span class="product-detail__price">{{ productData.price }} ₽</span>
+            <span class="product-detail__price">{{ productData.minPrice ? 'от ' : '' }}{{ productData.price }} ₽</span>
           </div>
           <div class="product-detail__actions">
             <button (click)="navigateToPurchasePage()" class="product-detail__button">Купить</button>
-            <a href="https://moto.vokrug.city/offer" target="_blank" rel="noopener noreferrer" class="product-detail__offer-link">Публичная оферта</a>
+            @if (productData.offerUrl) {
+            <a [href]="productData.offerUrl" target="_blank" rel="noopener noreferrer" class="product-detail__offer-link">Публичная оферта</a>
+            }
           </div>
         </div>
       </div>
