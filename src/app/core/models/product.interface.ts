@@ -10,5 +10,6 @@ export interface IProduct {
     isUrl:boolean,
     url:string|null,
     offerUrl?: string | null;
+    imageUrl:string|null
     productType: IProductType;
 }

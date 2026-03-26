@@ -1,7 +1,7 @@
 
 <div class="product-card">
   <div class="product-card__image">
-    <img src="/assets/icons/licensed.svg" [alt]="product.name" />
+    <img [src]="product.imageUrl || '/assets/icons/licensed.svg'" [alt]="product.name" />
   </div>
   <div class="product-card__content">
     <h3 class="product-card__title">{{ product.name }}</h3>

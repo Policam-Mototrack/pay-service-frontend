@@ -13,6 +13,7 @@ export interface productDTO {
   is_url:boolean,
   url:string|null,
   offer_url?: string | null,
+  image_url?:string|null
 }
 export interface IProductApiInterface extends BaseServerResponse<productDTO[]> {
   data: productDTO[]
@@ -32,6 +33,7 @@ export const DTOProduct = (productDTO: productDTO): IProduct => {
     url:productDTO?.url,
     offerUrl: productDTO?.offer_url,
     isVisible:productDTO?.is_visible,
+    imageUrl:productDTO?.image_url || null
   }
 }
 export interface IProductFilter {
