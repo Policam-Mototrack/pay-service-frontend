@@ -65,6 +65,12 @@ export class PurchasePageComponent {
   serviceFee = signal<number>(0)
   createdPurchaseUuid: string | undefined
   private title = inject(Title)
+  private buildPaymentReturnUrl(type: 'success' | 'fail', purchaseUuid: string): string {
+    const tree = this.router.createUrlTree(['/purchase/payment-status', purchaseUuid], {
+      queryParams: { paymentResult: type },
+    })
+    return new URL(this.router.serializeUrl(tree), window.location.origin).toString()
+  }
   goBackToProduct(): void {
     if (this._purchaseState() === 'contacts') {
       this._purchaseState.set('initial')
@@ -145,6 +151,8 @@ export class PurchasePageComponent {
           purchase_uuid: this.createdPurchaseUuid,
           email: this.purchaseContactsForm.value.email,
           phone: this.purchaseContactsForm.value.phone,
+          success_url: this.buildPaymentReturnUrl('success', this.createdPurchaseUuid),
+          fail_url: this.buildPaymentReturnUrl('fail', this.createdPurchaseUuid),
         })
         .pipe(
           takeUntilDestroyed(this.destroyRef),
