@@ -42,8 +42,8 @@ jobs:
             type=ref,event=branch
             type=ref,event=pr
             type=raw,value=latest,enable={{is_default_branch}}
-            type=raw,value=prod,enable={{is_default_branch}}
-            type=raw,value=dev,enable=${{ github.ref == 'refs/heads/develop' }}
+            type=raw,value=prod,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=develop,enable=${{ github.ref == 'refs/heads/develop' }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -72,7 +72,7 @@ jobs:
           password: ${{ secrets.DEV_SERVER_PASSWORD }}
           script: |
             # Обновить образ в сервисе
-            docker service update --image ${{ env.IMAGE_NAME }}:dev ${{ secrets.DEV_SERVICE_NAME }}
+            docker service update --image ${{ env.IMAGE_NAME }}:develop ${{ secrets.DEV_SERVICE_NAME }}
 
   deploy-prod:
     needs: build-and-push
