@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, signal } from '@angular/core'
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core'
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { PageContainerComponent } from '../../../../shared/components/layouts/page-container/page-container.component'
 import { BackButtonComponent } from '../../../../shared/components/ui/back-button/back-button.component'
 import { FormFieldComponent } from '../../../../shared/components/ui/form-field/form-field.component'
-import { RadioGroupComponent, RadioOption } from '../../../../shared/components/ui/radio-group/radio-group.component'
+import { RadioGroupComponent } from '../../../../shared/components/ui/radio-group/radio-group.component'
 import { DatePickerComponent } from '../../../../shared/components/ui/date-picker/date-picker.component'
 import { CommonModule, DatePipe } from '@angular/common'
 import { ProductService } from '../../../catalog/services/product.service'
@@ -17,11 +17,10 @@ import { ToastService } from '../../../../core/services/toast.service'
 import { IPurchase } from '../../../../core/models/purchase.interface'
 import { PurchasesApiService } from '../../../../core/api/purchases/purchases-api.service'
 import { ICreatePurchase } from '../../../../core/api/purchases/models/purchase.api.interface'
-import { catchError, EMPTY, of } from 'rxjs'
+import { catchError, concatMap, EMPTY } from 'rxjs'
 import { HttpErrorResponse } from '@angular/common/http'
 import { getErrorMessage } from '../../../../shared/utils/error-message.util'
 import { AnonymousAuthService } from '../../../auth/anonymous-auth/services/anonymous-auth.service'
-import { PurchaseContactsFactory } from './purchase-contacts.factory'
 import { BaseServerResponse } from '../../../../core/api/shared/models/responses/base-server-response.interface'
 import { IPaymentLink } from '../../../../core/api/purchases/models/bank.api.interface'
 import { BankApiService } from '../../../../core/api/purchases/bank-api.service'
@@ -58,12 +57,8 @@ export class PurchasePageComponent {
   bankApiService = inject(BankApiService)
   private toastService = inject(ToastService)
   private router = inject(Router)
-  purchaseContactsForm: FormGroup | undefined
-  _purchaseState = signal<'initial' | 'contacts'>('initial')
-  fb = inject(FormBuilder)
   product = signal<IProduct | undefined>(undefined)
   serviceFee = signal<number>(0)
-  createdPurchaseUuid: string | undefined
   private title = inject(Title)
   private buildPaymentReturnUrl(type: 'success' | 'fail', purchaseUuid: string): string {
     const tree = this.router.createUrlTree(['/purchase/payment-status', purchaseUuid], {
@@ -72,18 +67,10 @@ export class PurchasePageComponent {
     return new URL(this.router.serializeUrl(tree), window.location.origin).toString()
   }
   goBackToProduct(): void {
-    if (this._purchaseState() === 'contacts') {
-      this._purchaseState.set('initial')
-    } else {
-      this.router.navigate(['/catalog', this.productId])
-    }
+    this.router.navigate(['/catalog', this.productId])
   }
   submitForm(): void {
-    if (this._purchaseState() === 'initial') {
-      this.createPurchase()
-    } else {
-      this.initializePurchaseContactsForm()
-    }
+    this.createPurchase()
   }
 
   formatDateInFields(formValue: any) {
@@ -91,86 +78,72 @@ export class PurchasePageComponent {
     fields.forEach((field) => formValue[field.name] = this.datePipe.transform(formValue[field.name], 'dd.MM.yyyy'))
   }
   createPurchase(): void {
-    let tempFormValue = { ...this.purchaseForm.value } //Потом убрать
-    this.formatDateInFields(tempFormValue) //потом убрать
-
     this.purchaseForm.markAllAsTouched()
     if (!this.purchaseForm.valid) {
       this.toastService.error('Заполните все обязательные поля')
       return
     }
-    if (this.purchaseForm.valid) {
-      const visitorUuid = this.anonymousAuthService.uuid()
-      if (!visitorUuid) {
-        this.toastService.error('Вы не авторизованы')
-        return
-      }
-      // Исключаем чекбоксы из отправляемых данных
-      const formValue = { ...this.purchaseForm.value }
-      this.formatDateInFields(formValue)
-      delete (formValue as any).personalDataConsent
-      delete (formValue as any).insuranceConfirmation
-      delete (formValue as any).sportsLicenseAgreement
+    const visitorUuid = this.anonymousAuthService.uuid()
+    if (!visitorUuid) {
+      this.toastService.error('Вы не авторизованы')
+      return
+    }
+    const formValue = { ...this.purchaseForm.value } as Record<string, unknown>
+    this.formatDateInFields(formValue)
+    delete formValue['personalDataConsent']
+    delete formValue['insuranceConfirmation']
+    delete formValue['sportsLicenseAgreement']
 
-      const createPurchase: ICreatePurchase = {
-        visitor_uuid: visitorUuid!,
-        products: [
-          {
-            product_id: this.productId!,
-            fields: formValue,
-          },
-        ],
-      }
-      this.purchasesApiService
-        .createPurchase(createPurchase)
-        .pipe(
-          takeUntilDestroyed(this.destroyRef),
-          catchError((error: HttpErrorResponse) => {
-            console.error('Error creating purchase:', error)
-            this.toastService.error(getErrorMessage(error))
-            return EMPTY
-          }),
-        )
-        .subscribe((purchase: IPurchase) => {
-          this.purchaseContactsForm = PurchaseContactsFactory.createPurchaseContactsForm(purchase.uuid)
-          this.createdPurchaseUuid = purchase.uuid
+    const email = String(formValue['email'] ?? '')
+    const phone = String(formValue['phone'] ?? '')
+    delete formValue['email']
+    delete formValue['phone']
+
+    const createPurchase: ICreatePurchase = {
+      visitor_uuid: visitorUuid,
+      email,
+      phone,
+      products: [
+        {
+          product_id: this.productId!,
+          fields: formValue as { [key: string]: string | number | boolean | Date },
+        },
+      ],
+    }
+    let purchaseUuidForRedirect = ''
+    this.purchasesApiService
+      .createPurchase(createPurchase)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error creating purchase:', error)
+          this.toastService.error(getErrorMessage(error))
+          return EMPTY
+        }),
+        concatMap((purchase: IPurchase) => {
+          purchaseUuidForRedirect = purchase.uuid
           this.serviceFee.set(purchase.serviceFee)
-          this._purchaseState.set('contacts')
-        })
-    }
+          return this.bankApiService.initializePurchase({
+            purchase_uuid: purchase.uuid,
+            email,
+            phone,
+            success_url: this.buildPaymentReturnUrl('success', purchase.uuid),
+            fail_url: this.buildPaymentReturnUrl('fail', purchase.uuid),
+          })
+        }),
+        catchError((error: HttpErrorResponse) => {
+          this.toastService.error(getErrorMessage(error))
+          return EMPTY
+        }),
+      )
+      .subscribe((_response: BaseServerResponse<IPaymentLink>) => {
+        this.router.navigate(['/purchase/payment-status', purchaseUuidForRedirect])
+        this.toastService.success('Платеж инициализирован')
+      })
   }
-  initializePurchaseContactsForm() {
-    if (this.purchaseContactsForm && this.createdPurchaseUuid) {
-      this.purchaseContactsForm.markAllAsTouched()
-      if (!this.purchaseContactsForm.valid) {
-        this.toastService.error('Заполните все обязательные поля')
-        return
-      }
-      this.bankApiService
-        .initializePurchase({
-          purchase_uuid: this.createdPurchaseUuid,
-          email: this.purchaseContactsForm.value.email,
-          phone: this.purchaseContactsForm.value.phone,
-          success_url: this.buildPaymentReturnUrl('success', this.createdPurchaseUuid),
-          fail_url: this.buildPaymentReturnUrl('fail', this.createdPurchaseUuid),
-        })
-        .pipe(
-          takeUntilDestroyed(this.destroyRef),
-          catchError((error: HttpErrorResponse) => {
-            this.toastService.error(getErrorMessage(error))
-            return EMPTY
-          }),
-        )
-        .subscribe((response: BaseServerResponse<IPaymentLink>) => {
-          this.router.navigate(['/purchase/payment-status', this.createdPurchaseUuid])
-          this.toastService.success('Платеж инициализирован')
-        })
-    } else {
-      this.toastService.error('Ошибка при создании покупки')
-    }
-  }
-  getCurrentControlInContactsForm(controlName: string) {
-    return this.purchaseContactsForm?.get(controlName) as FormControl
+
+  getFormControl(controlName: string): FormControl {
+    return this.purchaseForm.get(controlName) as FormControl
   }
 
   getCheckboxControl(controlName: string): FormControl {
@@ -186,18 +159,34 @@ export class PurchasePageComponent {
     return productPrice + this.getServiceFee()
   }
   createPurchaseForm() {
-    if (this.product()) {
-      try {
-        this.purchaseFields.set(PurchaseFactory.createPurchaseForm(this.product()!))
-        this.purchaseFields().forEach((field) => {
-          this.purchaseForm.addControl(field.name, field.control)
-        })
-        // Добавляем контролы для чекбоксов
-        this.purchaseForm.addControl('personalDataConsent', new FormControl(false, [Validators.requiredTrue]))
-        this.purchaseForm.addControl('insuranceConfirmation', new FormControl(false, [Validators.requiredTrue]))
-        this.purchaseForm.addControl('sportsLicenseAgreement', new FormControl(false, [Validators.requiredTrue]))
-      } catch (error) {
-        console.error('Error creating purchase form:', error)
+    const product = this.product()
+    if (!product) {
+      return
+    }
+    try {
+      this.purchaseFields.set(PurchaseFactory.createPurchaseForm(product))
+      this.purchaseFields().forEach((field) => {
+        this.purchaseForm.addControl(field.name, field.control)
+      })
+    } catch (error) {
+      console.error('Error creating purchase form:', error)
+      this.purchaseFields.set([])
+      this.toastService.error('Не удалось загрузить поля товара')
+    }
+    this.addCommonPurchaseControls()
+  }
+
+  private addCommonPurchaseControls(): void {
+    const pairs: [string, FormControl][] = [
+      ['email', new FormControl('', [Validators.required, Validators.email])],
+      ['phone', new FormControl('', [Validators.required])],
+      ['personalDataConsent', new FormControl(false, [Validators.requiredTrue])],
+      ['insuranceConfirmation', new FormControl(false, [Validators.requiredTrue])],
+      ['sportsLicenseAgreement', new FormControl(false, [Validators.requiredTrue])],
+    ]
+    for (const [name, control] of pairs) {
+      if (!this.purchaseForm.contains(name)) {
+        this.purchaseForm.addControl(name, control)
       }
     }
   }

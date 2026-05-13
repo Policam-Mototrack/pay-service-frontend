@@ -1,13 +1,11 @@
-import { IProductType } from '../../../models/product-type.interface'
+import { IProductType, normalizeProductTypeFields } from '../../../models/product-type.interface'
 import { BaseServerResponse } from '../../shared/models/responses/base-server-response.interface'
 
 export interface productTypeDTO {
   id: number
   name: string
-  fields: {
-    title: string
-    type: 'string' | 'number' | 'boolean' | 'date'
-  }[]
+  /** Массив или объект — нормализуется в DTOProductType */
+  fields: unknown
 }
 
 export interface IProductTypeApiInterface extends BaseServerResponse<productTypeDTO[]> {
@@ -21,6 +19,6 @@ export const DTOProductType = (productTypeDTO: productTypeDTO): IProductType => 
   return {
     id: productTypeDTO?.id,
     name: productTypeDTO?.name,
-    fields: productTypeDTO?.fields,
+    fields: normalizeProductTypeFields(productTypeDTO?.fields),
   }
 }

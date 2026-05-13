@@ -23,10 +23,12 @@ export interface IPurchaseApiInterfaceById extends BaseServerResponse<purchaseDT
     data: purchaseDTO
 }
 export interface ICreatePurchase {
-    visitor_uuid: string,
-    products:[
+    visitor_uuid: string
+    email: string
+    phone: string
+    products: [
         {
-            product_id: number,
+            product_id: number
             fields: {
                 [key: string]: string | number | boolean | Date
             }

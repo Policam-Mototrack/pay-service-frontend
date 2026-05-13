@@ -1,11 +1,12 @@
 import { IProduct } from '../../../../core/models/product.interface'
-import { FormBuilder, FormControl, Validators } from '@angular/forms'
+import { FormControl, Validators } from '@angular/forms'
+import { normalizeProductTypeFields } from '../../../../core/models/product-type.interface'
 import { IGeneratedField } from '../../models/generated-field'
 
 export class PurchaseFactory {
   static createPurchaseForm(product: IProduct) {
     const generatedFields: IGeneratedField[] = []
-    product.productType.fields.forEach((field, index) => {
+    normalizeProductTypeFields(product.productType?.fields).forEach((field) => {
       generatedFields.push({
         name: field.title,
         title: field.title,

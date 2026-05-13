@@ -3,7 +3,10 @@ import { PageContainerComponent } from '../../../../shared/components/layouts/pa
 import { ProductsApiService } from '../../../../core/api/products/products-api.service'
 import { DTOProduct, IProductApiInterface } from '../../../../core/api/products/models/produсts.api.interface'
 import { CatalogStore } from '../../store/catalog.store'
-import { IProductTypeApiInterface } from '../../../../core/api/product-types/models/product-types.api.interface'
+import {
+  DTOProductType,
+  IProductTypeApiInterface,
+} from '../../../../core/api/product-types/models/product-types.api.interface'
 import { ProductTypesApiService } from '../../../../core/api/product-types/product-types-api.service'
 import { ProductCardComponent } from '../../components/product-card/product-card.component'
 import { CommonModule } from '@angular/common'
@@ -42,7 +45,7 @@ export class CatalogPageComponent implements OnInit {
       .getProductTypes()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((response: IProductTypeApiInterface) => {
-        this.catalogStore.setProductTypes(response.data ?? [])
+        this.catalogStore.setProductTypes((response.data ?? []).map(DTOProductType))
       })
   }
 

@@ -5,7 +5,6 @@
     @if (product()) {
     <div class="purchase-page__card">
       <h1 class="purchase-page__title">{{ product()?.name }}</h1>
-      @if (_purchaseState() === 'initial') {
       <div class="purchase-page__contacts-section">
         <p class="purchase-page__contacts-title">Заполните необходимую информацию для оформления покупки</p>
       </div>
@@ -89,6 +88,59 @@
         ></app-form-field>
         } } }
 
+        <app-form-field
+          [control]="getFormControl('email')"
+          label="Электронная почта"
+          [required]="true"
+          [type]="'email'"
+          [hasError]="!getFormControl('email').valid && getFormControl('email').touched"
+          [errorMessage]="getFormControl('email') | localizeFieldError"
+          fieldId="purchase-email"
+        ></app-form-field>
+        <app-form-field
+          [control]="getFormControl('phone')"
+          label="Телефон"
+          [required]="true"
+          [type]="'tel'"
+          [hasError]="!getFormControl('phone').valid && getFormControl('phone').touched"
+          [errorMessage]="getFormControl('phone') | localizeFieldError"
+          fieldId="purchase-phone"
+        ></app-form-field>
+
+        <div class="purchase-page__receipt">
+          <div class="purchase-page__receipt-title">Стоимость товара</div>
+          <div class="purchase-page__products-list">
+            <div class="purchase-page__product-item">
+              <div class="purchase-page__product-info">
+                <span class="purchase-page__product-name">{{ product()?.name }}</span>
+                <span class="purchase-page__product-quantity">1 шт</span>
+              </div>
+              <div class="purchase-page__product-price">{{ product()?.minPrice ? 'от ' : '' }}{{ product()?.price }} ₽</div>
+            </div>
+          </div>
+
+          <div class="purchase-page__receipt-divider"></div>
+
+          <div class="purchase-page__receipt-row">
+            <span class="purchase-page__receipt-label">Товары</span>
+            <span class="purchase-page__receipt-value">{{ product()?.minPrice ? 'от ' : '' }}{{ product()?.price }} ₽</span>
+          </div>
+
+          @if (getServiceFee() > 0) {
+          <div class="purchase-page__receipt-row">
+            <span class="purchase-page__receipt-label">Сервисный сбор</span>
+            <span class="purchase-page__receipt-value">{{ getServiceFee() }} ₽</span>
+          </div>
+          }
+
+          <div class="purchase-page__receipt-divider"></div>
+
+          <div class="purchase-page__total">
+            <span class="purchase-page__total-label">Итого</span>
+            <span class="purchase-page__total-amount">{{ getTotalPrice() }} ₽</span>
+          </div>
+        </div>
+
         <div class="purchase-page__checkboxes">
           <label class="purchase-page__checkbox-label">
             <input type="checkbox" [formControl]="getCheckboxControl('personalDataConsent')" class="purchase-page__checkbox" />
@@ -141,53 +193,6 @@
           }
         </p>
       </form>
-      } @if (purchaseContactsForm && _purchaseState() === 'contacts') {
-      <div class="purchase-page__contacts-section">
-        <p class="purchase-page__contacts-title">Заполните контактную информацию куда будет отправлен товар</p>
-      </div>
-      <form [formGroup]="purchaseContactsForm" (ngSubmit)="initializePurchaseContactsForm()" class="purchase-page__form">
-        <app-form-field
-          [control]="getCurrentControlInContactsForm('email')"
-          label="Электронная почта"
-          [required]="true"
-          [type]="'email'"
-        ></app-form-field>
-        <app-form-field [control]="getCurrentControlInContactsForm('phone')" label="Телефон" [required]="true" [type]="'tel'"></app-form-field>
-
-        <div class="purchase-page__receipt">
-          <div class="purchase-page__receipt-title">Стоимость товара</div>
-          <div class="purchase-page__products-list">
-            <div class="purchase-page__product-item">
-              <div class="purchase-page__product-info">
-                <span class="purchase-page__product-name">{{ product()?.name }}</span>
-                <span class="purchase-page__product-quantity">1 шт</span>
-              </div>
-              <div class="purchase-page__product-price">{{ product()?.minPrice ? 'от ' : '' }}{{ product()?.price }} ₽</div>
-            </div>
-          </div>
-
-          <div class="purchase-page__receipt-divider"></div>
-
-          <div class="purchase-page__receipt-row">
-            <span class="purchase-page__receipt-label">Товары</span>
-            <span class="purchase-page__receipt-value">{{ product()?.minPrice ? 'от ' : '' }}{{ product()?.price }} ₽</span>
-          </div>
-
-          <div class="purchase-page__receipt-row">
-            <span class="purchase-page__receipt-label">Сервисный сбор</span>
-            <span class="purchase-page__receipt-value">{{ getServiceFee() }} ₽</span>
-          </div>
-
-          <div class="purchase-page__receipt-divider"></div>
-
-          <div class="purchase-page__total">
-            <span class="purchase-page__total-label">Итого</span>
-            <span class="purchase-page__total-amount">{{ getTotalPrice() }} ₽</span>
-          </div>
-        </div>
-        <button type="submit" class="purchase-page__submit">Оформить покупку</button>
-      </form>
-      }
     </div>
     } @else {
     <div class="purchase-page__loading">
