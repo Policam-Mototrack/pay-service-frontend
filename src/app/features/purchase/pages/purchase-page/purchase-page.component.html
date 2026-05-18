@@ -181,6 +181,32 @@
           @if (!getCheckboxControl('sportsLicenseAgreement').valid && getCheckboxControl('sportsLicenseAgreement').touched) {
           <p class="purchase-page__checkbox-error">Это поле обязательно для заполнения</p>
           }
+
+          @for (agreement of product()?.additionalAgreements ?? []; track agreement.id) {
+          <label class="purchase-page__checkbox-label">
+            <input
+              type="checkbox"
+              [formControl]="getCheckboxControl(getAdditionalAgreementControlName(agreement.id))"
+              class="purchase-page__checkbox"
+            />
+            <span class="purchase-page__checkbox-text">
+              Ознакомлен с
+              @if (agreement.documentUrl) {
+              <a [href]="agreement.documentUrl" target="_blank" rel="noopener noreferrer" class="purchase-page__checkbox-link">
+                {{ agreement.name }}
+              </a>
+              } @else {
+              <span>{{ agreement.name }}</span>
+              }
+            </span>
+          </label>
+          @if (
+            !getCheckboxControl(getAdditionalAgreementControlName(agreement.id)).valid &&
+            getCheckboxControl(getAdditionalAgreementControlName(agreement.id)).touched
+          ) {
+          <p class="purchase-page__checkbox-error">Это поле обязательно для заполнения</p>
+          }
+          }
         </div>
 
         <button type="submit" class="purchase-page__submit">Оформить покупку</button>

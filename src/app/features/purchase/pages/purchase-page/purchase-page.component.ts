@@ -93,6 +93,7 @@ export class PurchasePageComponent {
     delete formValue['personalDataConsent']
     delete formValue['insuranceConfirmation']
     delete formValue['sportsLicenseAgreement']
+    this.removeAdditionalAgreementFields(formValue)
 
     const email = String(formValue['email'] ?? '')
     const phone = String(formValue['phone'] ?? '')
@@ -150,6 +151,10 @@ export class PurchasePageComponent {
     return this.purchaseForm.get(controlName) as FormControl
   }
 
+  getAdditionalAgreementControlName(agreementId: number): string {
+    return `additionalAgreement_${agreementId}`
+  }
+
   getServiceFee(): number {
     return this.serviceFee()
   }
@@ -174,6 +179,22 @@ export class PurchasePageComponent {
       this.toastService.error('Не удалось загрузить поля товара')
     }
     this.addCommonPurchaseControls()
+    this.addAdditionalAgreementControls()
+  }
+
+  private addAdditionalAgreementControls(): void {
+    for (const agreement of this.product()?.additionalAgreements ?? []) {
+      const controlName = this.getAdditionalAgreementControlName(agreement.id)
+      if (!this.purchaseForm.contains(controlName)) {
+        this.purchaseForm.addControl(controlName, new FormControl(false, [Validators.requiredTrue]))
+      }
+    }
+  }
+
+  private removeAdditionalAgreementFields(formValue: Record<string, unknown>): void {
+    for (const agreement of this.product()?.additionalAgreements ?? []) {
+      delete formValue[this.getAdditionalAgreementControlName(agreement.id)]
+    }
   }
 
   private addCommonPurchaseControls(): void {

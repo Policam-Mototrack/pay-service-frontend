@@ -1,3 +1,4 @@
+import { IAdditionalAgreement } from './additional-agreement.interface'
 import { IProductType } from "./product-type.interface";
 
 export interface IProduct {
@@ -10,6 +11,7 @@ export interface IProduct {
     isUrl:boolean,
     url:string|null,
     offerUrl?: string | null;
+    additionalAgreements?: IAdditionalAgreement[];
     imageUrl:string|null
     productType: IProductType;
 }
