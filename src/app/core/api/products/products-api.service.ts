@@ -14,6 +14,8 @@ export class ProductsApiService {
     return this.http
       .get<IProductApiInterface>(`${environment.apiUrl}/licenses/products`, {
         params: {
+          'pagination[limit]': -1,
+          'filter[is_visible]': true,
           ...filter,
         },
       })

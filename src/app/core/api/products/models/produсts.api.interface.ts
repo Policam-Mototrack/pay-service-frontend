@@ -58,10 +58,11 @@ export const DTOProduct = (productDTO: productDTO): IProduct => {
   }
 }
 export interface IProductFilter {
-  productTypeId?: number
-  name?: string
-  price?: number
-  tax?: string
-  page?: number
-  limit?: number
+  'filter[is_visible]'?: boolean | string
+  'filter[product_type_id]'?: number
+  'filter[name]'?: string
+  'filter[price]'?: number
+  'filter[tax]'?: string
+  'pagination[limit]'?: number
+  'pagination[offset]'?: number
 }
