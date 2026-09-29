@@ -1,93 +1,106 @@
-name: Build and Deploy
+name: Build & Push Docker image (dev/prod)
 
 on:
   push:
     branches:
-      - main      # prod деплой
-      - develop   # dev деплой
-  pull_request:
-    branches:
       - main
+      - develop
+
+concurrency:
+  group: dockerhub-${{ github.ref_name }}
+  cancel-in-progress: true
 
 env:
-  DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-  DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
   IMAGE_NAME: moskowpsix/pay-service-frontend
 
 jobs:
-  build-and-push:
+  build_and_push:
     runs-on: ubuntu-latest
-    outputs:
-      image-tag: ${{ steps.meta.outputs.tags }}
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ env.DOCKER_HUB_USERNAME }}
-          password: ${{ env.DOCKER_HUB_TOKEN }}
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=raw,value=prod,enable=${{ github.ref == 'refs/heads/main' }}
-            type=raw,value=develop,enable=${{ github.ref == 'refs/heads/develop' }}
+      - name: Compute tags
+        id: vars
+        run: |
+          if [ "${GITHUB_REF_NAME}" = "main" ]; then
+            echo "ENV_TAG=prod" >> "$GITHUB_OUTPUT"
+            echo "BUILD_ENV=production" >> "$GITHUB_OUTPUT"
+          else
+            echo "ENV_TAG=dev" >> "$GITHUB_OUTPUT"
+            echo "BUILD_ENV=dev" >> "$GITHUB_OUTPUT"
+          fi
+          echo "SHA_TAG=sha-${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+      - name: Build & push
+        uses: docker/build-push-action@v6
         with:
           context: .
+          file: Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.ENV_TAG }}
+            ${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.ENV_TAG }}-${{ steps.vars.outputs.SHA_TAG }}
           build-args: |
-            BUILD_ENV=${{ github.ref == 'refs/heads/main' && 'production' || 'dev' }}
+            BUILD_ENV=${{ steps.vars.outputs.BUILD_ENV }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  deploy-dev:
-    needs: build-and-push
+  deploy:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
-    
-    steps:
-      - name: Deploy to Dev Server
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.DEV_SERVER_HOST }}
-          port: ${{ secrets.DEV_SERVER_PORT }}
-          username: ${{ secrets.DEV_SERVER_USER }}
-          password: ${{ secrets.DEV_SERVER_PASSWORD }}
-          script: |
-            # Обновить образ в сервисе
-            docker service update --image ${{ env.IMAGE_NAME }}:develop ${{ secrets.DEV_SERVICE_NAME }}
+    needs: [build_and_push]
+    environment: ${{ github.ref_name == 'main' && 'production' || 'dev' }}
 
-  deploy-prod:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    environment: production
-    
     steps:
-      - name: Deploy to Production Server
-        uses: appleboy/ssh-action@v1.0.0
+      - name: Compute deploy tag
+        id: vars
+        run: |
+          if [ "${GITHUB_REF_NAME}" = "main" ]; then
+            echo "ENV_TAG=prod" >> "$GITHUB_OUTPUT"
+          else
+            echo "ENV_TAG=dev" >> "$GITHUB_OUTPUT"
+          fi
+          echo "SHA_TAG=sha-${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy to Swarm (service update via SSH)
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.PROD_SERVER_HOST }}
-          port: ${{ secrets.PROD_SERVER_PORT }}
-          username: ${{ secrets.PROD_SERVER_USER }}
-          password: ${{ secrets.PROD_SERVER_PASSWORD }}
+          host: ${{ github.ref_name == 'main' && secrets.PROD_SERVER_HOST || secrets.DEV_SERVER_HOST }}
+          username: ${{ github.ref_name == 'main' && secrets.PROD_SERVER_USER || secrets.DEV_SERVER_USER }}
+          password: ${{ github.ref_name == 'main' && secrets.PROD_SERVER_PASSWORD || secrets.DEV_SERVER_PASSWORD }}
+          port: ${{ github.ref_name == 'main' && (secrets.PROD_SERVER_PORT || 22) || (secrets.DEV_SERVER_PORT || 22) }}
+          script_stop: true
+          command_timeout: 5m
           script: |
-            # Обновить образ в сервисе
-            docker service update --image ${{ env.IMAGE_NAME }}:prod ${{ secrets.PROD_SERVICE_NAME }}
+            set -euo pipefail
+            # Уникальный тег с sha — Swarm всегда видит новый image ref
+            DOCKER_IMAGE='${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.ENV_TAG }}-${{ steps.vars.outputs.SHA_TAG }}'
+            SWARM_SERVICE='${{ github.ref_name == 'main' && secrets.PROD_SERVICE_NAME || secrets.DEV_SERVICE_NAME }}'
+
+            if [ -z "${SWARM_SERVICE}" ]; then
+              echo "Missing secret: ${{ github.ref_name == 'main' && 'PROD_SERVICE_NAME' || 'DEV_SERVICE_NAME' }}"
+              exit 1
+            fi
+
+            echo "Deploying image: ${DOCKER_IMAGE} to service: ${SWARM_SERVICE}"
+            echo "Current service status:"
+            docker service ps "${SWARM_SERVICE}" --no-trunc | head -n 5 || true
+
+            echo "Updating service in background (detached mode)..."
+            docker service update --with-registry-auth --force --detach --image "${DOCKER_IMAGE}" "${SWARM_SERVICE}" || {
+              echo "Service update command failed"
+              docker service ps "${SWARM_SERVICE}" --no-trunc | head -n 10
+              exit 1
+            }
+
+            echo "Service update initiated successfully"
+            echo "Update is running in background. Check service status manually:"
+            echo "  docker service ps ${SWARM_SERVICE}"
