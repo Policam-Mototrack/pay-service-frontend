@@ -1,0 +1,90 @@
+<app-page-container>
+  <app-back-button link="/seller/purchases" text="← К списку покупок"></app-back-button>
+
+  @if (purchase(); as currentPurchase) {
+    <div class="purchase-detail">
+      <div class="purchase-detail__header">
+        <div>
+          <h1>Покупка</h1>
+          <h2>{{ currentPurchase.uuid }}</h2>
+        </div>
+        <span class="purchase-detail__status" [attr.data-status]="currentPurchase.paymentStatus">
+          {{ paymentStatusLabel(currentPurchase.paymentStatus) }}
+        </span>
+      </div>
+
+      <div class="purchase-detail__summary">
+        <div>
+          <div class="purchase-detail__label">Дата</div>
+          <div>{{ formatDate(currentPurchase.createdAt) }}</div>
+        </div>
+        <div>
+          <div class="purchase-detail__label">Email</div>
+          <div>{{ currentPurchase.payerEmail || '—' }}</div>
+        </div>
+        <div>
+          <div class="purchase-detail__label">Телефон</div>
+          <div>{{ currentPurchase.payerPhone || '—' }}</div>
+        </div>
+        <div>
+          <div class="purchase-detail__label">Сумма</div>
+          <div class="purchase-detail__price">{{ currentPurchase.finalPrice }} ₽</div>
+        </div>
+      </div>
+
+      <h3>Товары</h3>
+
+      <div class="purchase-products">
+        @for (product of currentPurchase.products; track product.id) {
+          <div class="purchase-product">
+            <div class="purchase-product__top">
+              <div>
+                <div class="purchase-product__name">{{ product.nameAtPurchase }}</div>
+                <div class="purchase-product__meta">
+                  {{ product.productTypeName || 'Тип не указан' }} · {{ product.quantity }} шт. ·
+                  {{ product.priceAtPurchase }} ₽
+                </div>
+                <div class="purchase-product__meta">
+                  Лицензия: {{ product.licenseNumber || '—' }}
+                </div>
+              </div>
+
+              @if (canDownload(product)) {
+                <div class="purchase-product__action">
+                  <app-standart-button
+                    theme="primary"
+                    [text]="downloadingProductId() === product.id ? 'Генерация...' : 'Скачать PDF'"
+                    type="button"
+                    (click)="downloadLicense(product)"
+                  ></app-standart-button>
+                </div>
+              } @else if (!product.hasLicensePdf) {
+                <div class="purchase-product__hint">PDF недоступен для этого типа товара</div>
+              } @else {
+                <div class="purchase-product__hint">Недостаточно прав для скачивания</div>
+              }
+            </div>
+
+            @if (productFieldsEntries(product).length > 0) {
+              <div class="purchase-product__fields">
+                <div class="purchase-detail__label">Данные при покупке</div>
+                <dl>
+                  @for (field of productFieldsEntries(product); track field.key) {
+                    <div class="purchase-product__field">
+                      <dt>{{ field.key }}</dt>
+                      <dd>{{ field.value }}</dd>
+                    </div>
+                  }
+                </dl>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="empty-state">
+      <p>Загрузка покупки...</p>
+    </div>
+  }
+</app-page-container>

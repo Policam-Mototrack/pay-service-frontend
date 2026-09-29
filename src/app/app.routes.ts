@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { catalogRoutes } from './features/catalog/routes/catalog.routes';
 import { purchaseRoutes } from './features/purchase/routes/purchase.routes';
+import { sellerCabinetRoutes } from './features/seller-cabinet/routes/seller-cabinet.routes';
 import { NotFoundPageComponent } from './shared/pages/not-found-page/not-found-page.component';
 
 export const routes: Routes = [
@@ -16,6 +17,10 @@ export const routes: Routes = [
     {
         path: 'purchase',
         children: purchaseRoutes
+    },
+    {
+        path: 'seller',
+        children: sellerCabinetRoutes
     },
     {
         path: '**',

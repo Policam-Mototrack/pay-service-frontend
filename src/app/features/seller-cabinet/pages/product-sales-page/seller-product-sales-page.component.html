@@ -1,0 +1,150 @@
+<app-page-container>
+  <app-back-button link="/seller/products" text="← К товарам"></app-back-button>
+
+  @if (product(); as currentProduct) {
+    <div class="page-header">
+      <div>
+        <h1>{{ currentProduct.name }}</h1>
+        <h2>
+          Реестр документов
+          · {{ currentProduct.storeName || 'Магазин не указан' }}
+          @if (currentProduct.productTypeName) {
+            · {{ currentProduct.productTypeName }}
+          }
+        </h2>
+      </div>
+      <div class="page-header__actions">
+        <app-standart-button
+          theme="secondary"
+          [text]="exporting() ? 'Excel...' : 'Excel'"
+          type="button"
+          (click)="exportExcel()"
+        ></app-standart-button>
+      </div>
+    </div>
+
+    <form class="filters" [formGroup]="filtersForm">
+      <div class="filters__field filters__field--grow">
+        <label for="q">Поиск по полям</label>
+        <input id="q" type="text" formControlName="q" placeholder="ФИО, email, телефон, UUID..." />
+      </div>
+
+      <div class="filters__field filters__field--doc">
+        <label for="licenseNumber">Номер документа</label>
+        <input
+          id="licenseNumber"
+          type="text"
+          formControlName="licenseNumber"
+          placeholder="C1-DEMO-0001-2026"
+        />
+      </div>
+
+      <div class="filters__field">
+        <label for="dateFrom">Дата от</label>
+        <input id="dateFrom" type="date" formControlName="dateFrom" />
+      </div>
+
+      <div class="filters__field">
+        <label for="dateTo">Дата до</label>
+        <input id="dateTo" type="date" formControlName="dateTo" />
+      </div>
+
+      <div class="filters__field">
+        <label for="paymentStatus">Статус</label>
+        <select id="paymentStatus" formControlName="paymentStatus">
+          <option value="confirmed">Оплачено</option>
+          <option value="">Все</option>
+          <option value="authorized">Авторизовано</option>
+          <option value="pending">Ожидает</option>
+          <option value="cancelled">Отменено</option>
+          <option value="refunded">Возврат</option>
+          <option value="failed">Ошибка</option>
+        </select>
+      </div>
+
+      <div class="filters__actions">
+        <app-standart-button theme="secondary" text="Сбросить" type="button" (click)="resetFilters()"></app-standart-button>
+      </div>
+    </form>
+
+    <div class="toolbar">
+      <div>Найдено: <strong>{{ total() }}</strong></div>
+      <div class="toolbar__pages">
+        <button type="button" class="pager" (click)="prevPage()" [disabled]="page() === 0">←</button>
+        <span>{{ page() + 1 }} / {{ totalPages() }}</span>
+        <button type="button" class="pager" (click)="nextPage()" [disabled]="page() + 1 >= totalPages()">→</button>
+      </div>
+    </div>
+
+    @if (sales().length > 0) {
+      <div class="table-wrap">
+        <table class="registry">
+          <thead>
+            <tr>
+              <th class="sortable" (click)="setSort('purchased_at')">
+                Дата {{ sortIndicator('purchased_at') }}
+              </th>
+              <th class="sortable" (click)="setSort('license_number')">
+                Номер {{ sortIndicator('license_number') }}
+              </th>
+              @for (key of fieldKeys(); track key) {
+                <th>{{ key }}</th>
+              }
+              <th>Статус</th>
+              <th class="sortable" (click)="setSort('price_at_purchase')">
+                Сумма {{ sortIndicator('price_at_purchase') }}
+              </th>
+              <th>PDF</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (sale of sales(); track sale.id) {
+              <tr>
+                <td>
+                  <div>{{ formatDate(sale.purchasedAt) }}</div>
+                  <div class="muted mono">{{ sale.purchaseUuid }}</div>
+                </td>
+                <td>
+                  <button type="button" class="linkish" (click)="copyLicense(sale.licenseNumber)">
+                    {{ sale.licenseNumber || '—' }}
+                  </button>
+                </td>
+                @for (key of fieldKeys(); track key) {
+                  <td>{{ fieldValue(sale, key) }}</td>
+                }
+                <td>
+                  <span class="status" [attr.data-status]="sale.paymentStatus">
+                    {{ paymentStatusLabel(sale.paymentStatus) }}
+                  </span>
+                </td>
+                <td class="nowrap">{{ sale.priceAtPurchase }} ₽</td>
+                <td>
+                  @if (canDownload(sale)) {
+                    <button
+                      type="button"
+                      class="pdf-btn"
+                      (click)="downloadLicense(sale)"
+                      [disabled]="downloadingSaleId() === sale.id"
+                    >
+                      {{ downloadingSaleId() === sale.id ? '...' : 'PDF' }}
+                    </button>
+                  } @else {
+                    <span class="muted">—</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <div class="empty-state">
+        <p>Документы не найдены</p>
+      </div>
+    }
+  } @else {
+    <div class="empty-state">
+      <p>Загрузка товара...</p>
+    </div>
+  }
+</app-page-container>

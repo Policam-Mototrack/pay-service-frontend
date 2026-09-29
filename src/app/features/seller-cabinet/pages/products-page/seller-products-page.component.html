@@ -1,0 +1,133 @@
+<app-page-container>
+  <div class="seller-header">
+    <div>
+      <h1>Кабинет продавца</h1>
+      <h2>
+        @if (account(); as currentAccount) {
+          {{ currentAccount.name }} · {{ currentAccount.login }}
+        } @else {
+          Личный кабинет
+        }
+      </h2>
+    </div>
+    <div class="seller-header__actions">
+      <app-standart-button theme="secondary" text="Выйти" type="button" (click)="logout()"></app-standart-button>
+    </div>
+  </div>
+
+  <div class="seller-filters">
+    <label class="seller-filters__label" for="store-filter">Магазин</label>
+    <select id="store-filter" class="seller-filters__select" [formControl]="storeControl">
+      @for (store of stores(); track store.id) {
+        <option [ngValue]="store.id">{{ store.name }}</option>
+      }
+    </select>
+  </div>
+
+  <section class="seller-section">
+    <div class="seller-section__head">
+      <h3 class="seller-section__title">Отчёт по продажам</h3>
+      <p class="seller-section__hint">
+        Подтверждённые продажи: сумма продаж, комиссия площадки, сумма к получению.
+      </p>
+    </div>
+
+    <form class="registry-export" [formGroup]="exportForm">
+      <div class="registry-export__row">
+        <div class="registry-export__field">
+          <label for="export-date-from">Дата от</label>
+          <input id="export-date-from" type="date" formControlName="dateFrom" />
+        </div>
+        <div class="registry-export__field">
+          <label for="export-date-to">Дата до</label>
+          <input id="export-date-to" type="date" formControlName="dateTo" />
+        </div>
+        <div class="registry-export__action">
+          <app-standart-button
+            theme="primary"
+            [text]="exportingRegistry() ? 'Формирование...' : 'Скачать Excel'"
+            type="button"
+            (click)="exportStoreRegistry()"
+          ></app-standart-button>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <section class="seller-section">
+    <div class="seller-section__head">
+      <h3 class="seller-section__title">Товары</h3>
+      <p class="seller-section__hint">
+        Откройте товар, чтобы посмотреть реестр документов и скачать PDF.
+      </p>
+    </div>
+
+    <div class="doc-search">
+      <label class="seller-filters__label" for="doc-search">Поиск документа</label>
+      <input
+        id="doc-search"
+        class="seller-filters__select"
+        type="text"
+        [formControl]="documentSearchControl"
+        placeholder="Номер C1-..., ФИО, email..."
+      />
+      @if (documents().length > 0) {
+        <div class="doc-search__hint">Найдено: {{ documentsTotal() }}</div>
+        <div class="doc-results">
+          @for (doc of documents(); track doc.id) {
+            <a class="doc-row" [routerLink]="['/seller/products', doc.productId]">
+              <div>
+                <button
+                  type="button"
+                  class="linkish"
+                  (click)="$event.preventDefault(); $event.stopPropagation(); copyLicense(doc.licenseNumber)"
+                >
+                  {{ doc.licenseNumber || '—' }}
+                </button>
+                <div class="doc-row__meta">
+                  {{ doc.productName || 'Товар' }}
+                  · {{ doc.storeName || 'Магазин' }}
+                  · {{ formatDate(doc.purchasedAt) }}
+                </div>
+              </div>
+              <div class="doc-row__right">Открыть реестр →</div>
+            </a>
+          }
+        </div>
+      }
+    </div>
+
+    @if (products().length > 0) {
+      <div class="seller-products">
+        @for (product of products(); track product.id) {
+          <a class="seller-product-card" [routerLink]="['/seller/products', product.id]">
+            <div class="seller-product-card__main">
+              <div>
+                <div class="seller-product-card__name">{{ product.name }}</div>
+                <div class="seller-product-card__meta">
+                  {{ product.storeName || 'Магазин не указан' }}
+                  @if (product.productTypeName) {
+                    · {{ product.productTypeName }}
+                  }
+                </div>
+              </div>
+              <div class="seller-product-card__price">{{ product.price }} ₽</div>
+            </div>
+            <div class="seller-product-card__footer">
+              @if (product.hasLicensePdf) {
+                <span class="badge badge--ok">PDF доступен</span>
+              } @else {
+                <span class="badge">Без PDF</span>
+              }
+              <span class="seller-product-card__link">Реестр →</span>
+            </div>
+          </a>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <p>Товары не найдены</p>
+      </div>
+    }
+  </section>
+</app-page-container>

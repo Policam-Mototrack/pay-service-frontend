@@ -1,0 +1,65 @@
+<app-page-container>
+  <div class="seller-header">
+    <div>
+      <h1>Покупки</h1>
+      <h2>
+        @if (account(); as currentAccount) {
+          {{ currentAccount.name }} · {{ currentAccount.login }}
+        } @else {
+          Кабинет продавца
+        }
+      </h2>
+    </div>
+    <div class="seller-header__actions">
+      <app-standart-button theme="secondary" text="Выйти" type="button" (click)="logout()"></app-standart-button>
+    </div>
+  </div>
+
+  <div class="seller-filters">
+    <label class="seller-filters__label" for="store-filter">Магазин</label>
+    <select id="store-filter" class="seller-filters__select" [formControl]="storeControl">
+      <option [ngValue]="null">Все магазины</option>
+      @for (store of stores(); track store.id) {
+        <option [ngValue]="store.id">{{ store.name }} ({{ store.role }})</option>
+      }
+    </select>
+  </div>
+
+  @if (purchases().length > 0) {
+    <div class="seller-purchases">
+      @for (purchase of purchases(); track purchase.uuid) {
+        <a class="seller-purchase-card" [routerLink]="['/seller/purchases', purchase.uuid]">
+          <div class="seller-purchase-card__top">
+            <div>
+              <div class="seller-purchase-card__uuid">{{ purchase.uuid }}</div>
+              <div class="seller-purchase-card__meta">{{ formatDate(purchase.createdAt) }}</div>
+            </div>
+            <span class="seller-purchase-card__status" [attr.data-status]="purchase.paymentStatus">
+              {{ paymentStatusLabel(purchase.paymentStatus) }}
+            </span>
+          </div>
+
+          <div class="seller-purchase-card__body">
+            <div>
+              <div class="seller-purchase-card__label">Плательщик</div>
+              <div>{{ purchase.payerEmail || '—' }}</div>
+              <div class="seller-purchase-card__meta">{{ purchase.payerPhone || '—' }}</div>
+            </div>
+            <div class="seller-purchase-card__price">{{ purchase.finalPrice }} ₽</div>
+          </div>
+
+          <div class="seller-purchase-card__products">
+            {{ purchase.products.length }} поз. ·
+            @for (product of purchase.products; track product.id; let last = $last) {
+              {{ product.nameAtPurchase }}@if (!last) {, }
+            }
+          </div>
+        </a>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <p>Покупки не найдены</p>
+    </div>
+  }
+</app-page-container>

@@ -1,0 +1,31 @@
+<app-page-container>
+  <div class="seller-login">
+    <h1>Кабинет продавца</h1>
+    <h2>Войдите с логином и паролем, которые выдал администратор</h2>
+
+    <form class="seller-login__form" [formGroup]="form" (ngSubmit)="submit()">
+      <app-form-field
+        [control]="loginControl"
+        label="Логин"
+        [required]="true"
+        placeholder="shop_admin"
+        fieldId="seller-login"
+        [hasError]="loginControl.invalid && loginControl.touched"
+        errorMessage="Введите логин"
+      ></app-form-field>
+
+      <app-form-field
+        [control]="passwordControl"
+        label="Пароль"
+        type="password"
+        [required]="true"
+        placeholder="••••••••"
+        fieldId="seller-password"
+        [hasError]="passwordControl.invalid && passwordControl.touched"
+        errorMessage="Введите пароль"
+      ></app-form-field>
+
+      <app-standart-button theme="primary" text="Войти" type="submit"></app-standart-button>
+    </form>
+  </div>
+</app-page-container>
